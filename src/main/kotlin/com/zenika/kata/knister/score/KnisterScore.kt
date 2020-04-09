@@ -14,16 +14,16 @@ fun findCorrespondingFigure(dices: IntArray): Figure? {
 
 class Grid(private val lines : Array<IntArray>) {
     fun score() : Int {
+        var linesSum = lines.map {Line(it).score()}.sum();
+
         var cols = Array<Line>(5) { i ->
             Line(lines.map{ it[i] }.toIntArray())
         };
+        var colsSum = cols.map(Line::score).sum();
 
         var i = 0 
         var diagOne = Line(lines.map { it[i++] }.toIntArray()).score()
         val diagTwo = Line(lines.map { it[--i] }.toIntArray()).score()
-
-        var colsSum = cols.map(Line::score).sum();
-        var linesSum = lines.map {Line(it).score()}.sum();
 
         return linesSum + colsSum +  (diagOne + diagTwo)*2;
     }
