@@ -1,22 +1,20 @@
 package com.zenika.kata.knister.score
 
+import org.hamcrest.Matchers.`is`
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
-import org.springframework.test.context.junit4.SpringRunner
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
-
-import org.springframework.*.
-
-import org.hamcrest.Matchers.hasSize
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
-@RunWith(SpringRunner::class)
+
+@ExtendWith(SpringExtension::class)
 @WebMvcTest(KnisterScoreController::class)
 class KnisterScoreControllerTest () {
     @Autowired
@@ -38,7 +36,6 @@ class KnisterScoreControllerTest () {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(grid))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$.score", 53))
+            .andExpect(jsonPath("$.score", `is`(53)))
     }
 }
