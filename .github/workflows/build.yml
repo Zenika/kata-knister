@@ -21,7 +21,7 @@ jobs:
           uses: actions/setup-java@v1
           with:
             java-version: 11
-        - run: mvn -f kata-knister/pom.xml clean compile
+        - run: mvn clean compile
 
     # steps:
     # - uses: actions/checkout@v2
