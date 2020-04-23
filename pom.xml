@@ -65,10 +65,10 @@
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
-			<!--plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
@@ -76,9 +76,9 @@
 					<args>
 						<arg>-Xjsr305=strict</arg>
 					</args>
-					<!--compilerPlugins>
+					<compilerPlugins>
 						<plugin>spring</plugin>
-					</compilerPlugins-->
+					</compilerPlugins>
 				</configuration>
 				<dependencies>
 					<dependency>
