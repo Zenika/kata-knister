@@ -20,6 +20,7 @@ jobs:
     
     - name: GitHub Action for Maven
       uses: LucaFeger/action-maven-cli@1.1.0
+      run: clean compile
 
-    - name: Maven Install
-      run: mvn clean compile
+    # - name: Maven Install
+    #   run: mvn clean compile
