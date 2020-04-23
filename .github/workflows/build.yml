@@ -16,11 +16,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: GitHub Action for Maven
-      uses: LucaFeger/action-maven-cli@1.1.0
-      run: clean compile
+        - uses: actions/checkout@master
+        - name: Setup java
+          uses: actions/setup-java@v1
+          with:
+            java-version: 11
+        - run: mvn -f kata-knister/pom.xml clean compile
 
+    # steps:
+    # - uses: actions/checkout@v2
+    
+    # - name: GitHub Action for Maven
+    #   uses: LucaFeger/action-maven-cli@1.1.0
+    #   run: clean compile
+      # args = "clean install"0
     # - name: Maven Install
     #   run: mvn clean compile
