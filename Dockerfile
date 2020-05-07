@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build ${DEPENDENCY}/BOOT-INF/lib lib
 COPY --from=build ${DEPENDENCY}/META-INF META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes .
-ENTRYPOINT ["java","-cp","/app:/app/lib/*","com.zenika.kata.knister.KnisterApplication"]
+ENTRYPOINT ["java","-cp","/app:/app/lib/*","com.zenika.kata.knister.KnisterApplicationKt"]
