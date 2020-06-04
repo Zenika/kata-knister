@@ -22,9 +22,16 @@ class KnisterRoomControllerTest () {
     private lateinit var mvc: MockMvc
 
     @Test
-    fun `given true is true`() {
+    fun `given a room is opened it gets an id`() {
         mvc.perform(post("/room"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", notNullValue()))
+    }
+
+    @Test
+    fun `given an open room a player can join`() {
+        val room = mvc.perform(post("/room")).andReturn();
+        Assertions.assertNotNull(room.response.getContentAsString());
+
     }
 }
