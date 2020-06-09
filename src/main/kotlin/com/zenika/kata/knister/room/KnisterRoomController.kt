@@ -1,26 +1,23 @@
 package com.zenika.kata.knister.room
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/rooms")
-class KnisterRoomController() {
-
-    // TODO : Use a repository
-    val rooms = mutableMapOf<String, Room>()
+class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @PostMapping
     fun openRoom() : Room {
         val room = Room()
-        rooms.put(room.id, room)
-        return room
+        return roomRepository.create(room)
     }
 
     @GetMapping("/{roomId}")
     fun getRoom(@PathVariable roomId: String): Room {
-        return rooms[roomId] ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return roomRepository.findOne(roomId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PostMapping("/{roomId}/players")
@@ -31,6 +28,7 @@ class KnisterRoomController() {
             throw ResponseStatusException(HttpStatus.CONFLICT)
 
         room.players.add(player)
+        roomRepository.update(room)
     }
 }
 
@@ -41,5 +39,4 @@ data class Player(val name: String)
 fun generateRoomId() : String {
     val alphabet = ('a'..'z')
     return (1 .. 10).map{ alphabet.random() }.joinToString("")
-
 }
