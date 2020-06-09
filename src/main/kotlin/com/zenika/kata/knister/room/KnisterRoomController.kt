@@ -7,7 +7,7 @@ import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/rooms")
-class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
+class KnisterRoomController(@Autowired val roomRepository: RoomRepository = InMemoryRoomRepository()) {
 
     @PostMapping
     fun openRoom() : Room {
