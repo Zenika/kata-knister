@@ -1,6 +1,8 @@
 package com.zenika.kata.knister.room
 
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/rooms")
@@ -18,12 +20,12 @@ class KnisterRoomController() {
 
     @GetMapping("/{roomId}")
     fun getRoom(@PathVariable roomId: String): Room {
-        return rooms[roomId]!!
+        return rooms[roomId] ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PostMapping("/{roomId}/players")
     fun joinRoom(@PathVariable roomId: String, @RequestBody player: Player) {
-        rooms[roomId]!!.players.add(player)
+        rooms[roomId]?.players?.add(player) ?: throw  ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }
 

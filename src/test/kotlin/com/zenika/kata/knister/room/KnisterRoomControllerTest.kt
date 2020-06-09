@@ -70,8 +70,17 @@ class KnisterRoomControllerTest() {
     }
 
     @Test
-    fun `given a room id not existing should return a 404`() {
-        // TODO
+    fun `given a room id doesn't exist then getter should return a 404`() {
+        mvc.perform(get("/rooms/1234"))
+                .andExpect(status().isNotFound())
+    }
+
+    @Test
+    fun `given a room id doesn't exist then adding a player should return a 404`() {
+        mvc.perform(post("/rooms/1234/players")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Player("Toto"))))
+                .andExpect(status().isNotFound())
     }
 
     @Test
