@@ -25,7 +25,12 @@ class KnisterRoomController() {
 
     @PostMapping("/{roomId}/players")
     fun joinRoom(@PathVariable roomId: String, @RequestBody player: Player) {
-        rooms[roomId]?.players?.add(player) ?: throw  ResponseStatusException(HttpStatus.NOT_FOUND)
+        var room = getRoom(roomId)
+
+        if(room.players.contains(player))
+            throw ResponseStatusException(HttpStatus.CONFLICT)
+
+        room.players.add(player)
     }
 }
 

@@ -1,10 +1,7 @@
 package com.zenika.kata.knister.room
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jdk.jfr.ContentType
-import org.assertj.core.api.Assertions.*
 import org.hamcrest.Matchers.*
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -12,6 +9,7 @@ import org.springframework.http.MediaType
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
@@ -35,13 +33,9 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `given an open room a player can join`() {
-        val mvcResult = mvc.perform(post("/rooms")).andReturn();
-        var room = mapper.readValue<Room>(mvcResult.response.contentAsString, Room::class.java)
+        var room = createRoom()
 
-        mvc.perform(post("/rooms/${room.id}/players")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Player("Toto"))))
-                .andExpect(status().isOk())
+        room.addPlayer("Toto")
 
         mvc.perform(get("/rooms/${room.id}"))
                 .andExpect(status().isOk())
@@ -51,17 +45,10 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `given an open room several players can join`() {
-        val mvcResult = mvc.perform(post("/rooms")).andReturn();
-        var room = mapper.readValue<Room>(mvcResult.response.contentAsString, Room::class.java)
+        var room = createRoom()
 
-        mvc.perform(post("/rooms/${room.id}/players")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Player("Toto"))))
-                .andExpect(status().isOk())
-        mvc.perform(post("/rooms/${room.id}/players")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(Player("Tata"))))
-                .andExpect(status().isOk())
+        room.addPlayer("Toto").andExpect(status().isOk())
+        room.addPlayer("Tata").andExpect(status().isOk())
 
         mvc.perform(get("/rooms/${room.id}"))
                 .andExpect(status().isOk())
@@ -85,6 +72,20 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `trying to add an already existing player should return a 409`() {
-        // TODO
+        var room = createRoom();
+
+        room.addPlayer("Toto").andExpect(status().isOk())
+        room.addPlayer("Toto").andExpect(status().isConflict())
+    }
+
+    private fun createRoom(): Room {
+        val mvcResult = mvc.perform(post("/rooms")).andReturn();
+        return mapper.readValue<Room>(mvcResult.response.contentAsString, Room::class.java)
+    }
+
+    fun Room.addPlayer(playerName: String): ResultActions {
+        return mvc.perform(post("/rooms/${id}/players")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Player(playerName))))
     }
 }
