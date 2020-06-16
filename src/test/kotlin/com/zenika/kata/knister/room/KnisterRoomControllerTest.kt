@@ -85,6 +85,15 @@ class KnisterRoomControllerTest() {
         room.addPlayer("Toto").andExpect(status().isConflict())
     }
 
+    @Test
+    fun `Grandmaster can start game`() {
+        var room = createRoom("Hugo")
+
+        mvc.perform(post("/rooms/${room.id}/games"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.diceRolls", notNullValue()))
+    }
+
     private fun createRoom(gameMaster: String): Room {
         val mvcResult = mvc.perform(post("/rooms")
                 .contentType(MediaType.APPLICATION_JSON)

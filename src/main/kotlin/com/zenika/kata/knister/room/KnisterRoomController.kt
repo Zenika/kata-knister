@@ -28,6 +28,12 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository = InMe
         roomRepository.update(room)
     }
 
+    @PostMapping("/{roomId}/games")
+    fun startGame(@PathVariable roomId: String): KnisterGame {
+        var room = getRoom(roomId)
+        return room.startGame()
+    }
+
 }
 
 data class Room(val id: String = generateRoomId(), val players: MutableSet<Player> = mutableSetOf()) {
@@ -37,9 +43,15 @@ data class Room(val id: String = generateRoomId(), val players: MutableSet<Playe
 
         players.add(player)
     }
+
+    fun startGame(): KnisterGame {
+        return KnisterGame()
+    }
 }
 
 data class Player(val name: String)
+
+data class KnisterGame(val diceRolls: MutableList<Integer> = mutableListOf<Integer>())
 
 fun generateRoomId(): String {
     val alphabet = ('a'..'z')
