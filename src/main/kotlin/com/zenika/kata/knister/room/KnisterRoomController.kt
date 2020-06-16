@@ -10,8 +10,9 @@ import org.springframework.web.server.ResponseStatusException
 class KnisterRoomController(@Autowired val roomRepository: RoomRepository = InMemoryRoomRepository()) {
 
     @PostMapping
-    fun openRoom() : Room {
+    fun openRoom(@RequestBody player: Player): Room {
         val room = Room()
+        room.addPlayer(player)
         return roomRepository.create(room)
     }
 
@@ -23,20 +24,24 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository = InMe
     @PostMapping("/{roomId}/players")
     fun joinRoom(@PathVariable roomId: String, @RequestBody player: Player) {
         var room = getRoom(roomId)
+        room.addPlayer(player)
+        roomRepository.update(room)
+    }
 
-        if(room.players.contains(player))
+}
+
+data class Room(val id: String = generateRoomId(), val players: MutableSet<Player> = mutableSetOf()) {
+    fun addPlayer(player: Player) {
+        if (players.contains(player))
             throw ResponseStatusException(HttpStatus.CONFLICT)
 
-        room.players.add(player)
-        roomRepository.update(room)
+        players.add(player)
     }
 }
 
-data class Room(val id: String = generateRoomId(), val players: MutableSet<Player> = mutableSetOf())
-
 data class Player(val name: String)
 
-fun generateRoomId() : String {
+fun generateRoomId(): String {
     val alphabet = ('a'..'z')
-    return (1 .. 10).map{ alphabet.random() }.joinToString("")
+    return (1..10).map { alphabet.random() }.joinToString("")
 }

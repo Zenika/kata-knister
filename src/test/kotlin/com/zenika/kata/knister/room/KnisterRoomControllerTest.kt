@@ -22,8 +22,6 @@ import java.beans.BeanProperty
 @WebMvcTest(KnisterRoomController::class)
 class KnisterRoomControllerTest() {
 
-    // TODO : inject RoomRepository for tests
-
     @Autowired
     private lateinit var mvc: MockMvc
 
@@ -31,27 +29,30 @@ class KnisterRoomControllerTest() {
     private lateinit var mapper: ObjectMapper
 
     @Test
-    fun `given a room is opened it gets an id`() {
-        mvc.perform(post("/rooms"))
+    fun `given a room is opened it gets an id and a player`() {
+        mvc.perform(post("/rooms")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Player("Jean-Jacques"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Jean-Jacques")))
     }
 
     @Test
     fun `given an open room a player can join`() {
-        var room = createRoom()
+        var room = createRoom("Tutu")
 
         room.addPlayer("Toto")
 
         mvc.perform(get("/rooms/${room.id}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.players", notNullValue()))
-                .andExpect(jsonPath("$.players[*].name", contains("Toto")))
+                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Toto", "Tutu")))
     }
 
     @Test
     fun `given an open room several players can join`() {
-        var room = createRoom()
+        var room = createRoom("Tutu")
 
         room.addPlayer("Toto").andExpect(status().isOk())
         room.addPlayer("Tata").andExpect(status().isOk())
@@ -59,7 +60,7 @@ class KnisterRoomControllerTest() {
         mvc.perform(get("/rooms/${room.id}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.players", notNullValue()))
-                .andExpect(jsonPath("$.players[*].name", contains("Toto", "Tata")))
+                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Toto", "Tata", "Tutu")))
     }
 
     @Test
@@ -78,14 +79,17 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `trying to add an already existing player should return a 409`() {
-        var room = createRoom();
+        var room = createRoom("Tutu");
 
         room.addPlayer("Toto").andExpect(status().isOk())
         room.addPlayer("Toto").andExpect(status().isConflict())
     }
 
-    private fun createRoom(): Room {
-        val mvcResult = mvc.perform(post("/rooms")).andReturn();
+    private fun createRoom(gameMaster: String): Room {
+        val mvcResult = mvc.perform(post("/rooms")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Player(gameMaster))))
+        .andReturn();
         return mapper.readValue<Room>(mvcResult.response.contentAsString, Room::class.java)
     }
 
