@@ -29,4 +29,26 @@ class KnisterRoomTest {
             assertThat(id1).isNotEqualTo(id2)
         }
     }
+
+    @Nested
+    inner class RoomDataTest {
+        @Test
+        fun `add same player twice generates a business exception`() {
+            val myRoom = Room()
+            myRoom.addPlayer(Player("toto"))
+
+            assertThatThrownBy { myRoom.addPlayer(Player("toto")) }.isInstanceOf(PlayerAlreadExistsException::class.java)
+        }
+
+        @Test
+        fun `start a room already started generates a business exception`() {
+            val myRoom = Room()
+            myRoom.addPlayer(Player("toto"))
+            myRoom.startGame()
+
+            assertThatThrownBy { myRoom.startGame() }.isInstanceOf(GameAlreadyStartedException::class.java)
+        }
+
+        // TODO : can we start a game if there is no player
+    }
 }

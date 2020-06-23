@@ -86,13 +86,27 @@ class KnisterRoomControllerTest() {
     }
 
     @Test
-    fun `Grandmaster can start game`() {
+    fun `Gamemaster can start game`() {
         var room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room.id}/games"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.diceRolls", notNullValue()))
     }
+
+    @Test
+    fun `impossible to start a game if already started`() {
+        var room = createRoom("Hugo")
+
+        mvc.perform(post("/rooms/${room.id}/games"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.diceRolls", notNullValue()))
+
+        mvc.perform(post("/rooms/${room.id}/games"))
+                .andExpect(status().isConflict())
+    }
+
+    // TODO only Gamemaster can start a game ?
 
     private fun createRoom(gameMaster: String): Room {
         val mvcResult = mvc.perform(post("/rooms")
