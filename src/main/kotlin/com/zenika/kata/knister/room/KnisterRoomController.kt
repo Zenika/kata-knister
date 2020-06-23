@@ -44,6 +44,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository = InMe
 
     }
 
+    // TODO : avoir un seul handler
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(PlayerAlreadExistsException::class)
     fun handleGameBadRequest(req: HttpServletRequest, ex: Exception?) {
