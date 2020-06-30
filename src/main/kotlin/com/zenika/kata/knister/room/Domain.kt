@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 
 class Room() {
-    val id: String = generateRoomId()
+    val _id: String = generateRoomId()
     val players: MutableSet<Player> = mutableSetOf()
     val currentGame : KnisterGame = KnisterGame()
 
@@ -25,7 +25,6 @@ class Room() {
 
 data class Player(val name: String)
 
-//TODO : convert game into a room companion object
 data class KnisterGame(val diceRolls: MutableList<Integer> = mutableListOf<Integer>(), var started : Boolean = false) {
     fun start() {
         started = true;

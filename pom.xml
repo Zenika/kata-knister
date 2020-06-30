@@ -58,6 +58,11 @@
 			<version>3.15.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.litote.kmongo</groupId>
+			<artifactId>kmongo</artifactId>
+			<version>4.0.2</version>
+		</dependency>
 
 	</dependencies>
 

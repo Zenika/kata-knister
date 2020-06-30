@@ -7,17 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Bean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import java.beans.BeanProperty
 
-
+// TODO injecter InMemoryRoomRespository pour ne pas dépendre de mongo.
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(KnisterRoomController::class)
 class KnisterRoomControllerTest() {
@@ -34,7 +31,7 @@ class KnisterRoomControllerTest() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Player("Jean-Jacques"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", notNullValue()))
+                .andExpect(jsonPath("$._id", notNullValue()))
                 .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Jean-Jacques")))
     }
 
@@ -44,7 +41,7 @@ class KnisterRoomControllerTest() {
 
         room.addPlayer("Toto")
 
-        mvc.perform(get("/rooms/${room.id}"))
+        mvc.perform(get("/rooms/${room._id}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.players", notNullValue()))
                 .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Toto", "Tutu")))
@@ -57,7 +54,7 @@ class KnisterRoomControllerTest() {
         room.addPlayer("Toto").andExpect(status().isOk())
         room.addPlayer("Tata").andExpect(status().isOk())
 
-        mvc.perform(get("/rooms/${room.id}"))
+        mvc.perform(get("/rooms/${room._id}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.players", notNullValue()))
                 .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Toto", "Tata", "Tutu")))
@@ -89,7 +86,7 @@ class KnisterRoomControllerTest() {
     fun `Gamemaster can start game`() {
         var room = createRoom("Hugo")
 
-        mvc.perform(post("/rooms/${room.id}/games"))
+        mvc.perform(post("/rooms/${room._id}/games"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.diceRolls", notNullValue()))
     }
@@ -98,11 +95,11 @@ class KnisterRoomControllerTest() {
     fun `impossible to start a game if already started`() {
         var room = createRoom("Hugo")
 
-        mvc.perform(post("/rooms/${room.id}/games"))
+        mvc.perform(post("/rooms/${room._id}/games"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.diceRolls", notNullValue()))
 
-        mvc.perform(post("/rooms/${room.id}/games"))
+        mvc.perform(post("/rooms/${room._id}/games"))
                 .andExpect(status().isConflict())
     }
 
@@ -117,7 +114,7 @@ class KnisterRoomControllerTest() {
     }
 
     fun Room.addPlayer(playerName: String): ResultActions {
-        return mvc.perform(post("/rooms/${id}/players")
+        return mvc.perform(post("/rooms/${_id}/players")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Player(playerName))))
     }
