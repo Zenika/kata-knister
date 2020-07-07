@@ -1,9 +1,9 @@
 FROM maven:3.6.3-openjdk-11-slim as build
 WORKDIR /app
 COPY pom.xml .
-RUN mvn dependency:resolve
+RUN mvn dependency:go-offline
 COPY src src
-RUN mvn package
+RUN mvn package -DskipTests=true
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM adoptopenjdk/openjdk11
