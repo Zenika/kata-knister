@@ -1,6 +1,7 @@
 FROM maven:3.6.3-openjdk-11-slim as build
 WORKDIR /app
 COPY pom.xml .
+RUN mvn dependency:resolve
 COPY src src
 RUN mvn package
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
