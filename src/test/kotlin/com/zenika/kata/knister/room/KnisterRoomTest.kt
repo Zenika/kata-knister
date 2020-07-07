@@ -1,7 +1,9 @@
 package com.zenika.kata.knister.room
 
-import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 class KnisterRoomTest {
     @Nested

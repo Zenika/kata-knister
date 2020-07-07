@@ -1,13 +1,22 @@
 version: '3.4'
+
+volumes:
+  mongodata:
+
 services:
   mongo:
     image: mongo
+    volumes:
+      - mongodata:/data/db
     ports:
       - 27017:27017
+
 
   app:
     build: .
     ports:
       - 8080:8080
+    environment:
+      - MONGOCSTRING=mongodb://mongo:27017
     depends_on:
       - mongo

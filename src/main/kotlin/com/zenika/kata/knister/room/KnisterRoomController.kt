@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/rooms")
-class KnisterRoomController(@Autowired val roomRepository: RoomRepository = InMemoryRoomRepository()) {
+class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @PostMapping
     fun openRoom(@RequestBody player: Player): Room {

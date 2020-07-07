@@ -1,8 +1,5 @@
 package com.zenika.kata.knister.room
 
-import org.springframework.http.HttpStatus
-import org.springframework.web.server.ResponseStatusException
-
 class Room() {
     val _id: String = generateRoomId()
     val players: MutableSet<Player> = mutableSetOf()

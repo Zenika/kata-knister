@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class InMemoryRoomRepository : RoomRepository {
-
     val rooms = mutableMapOf<String, Room>()
 
     override fun create(room: Room): Room {

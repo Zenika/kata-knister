@@ -1,5 +1,6 @@
-import org.assertj.core.api.Assertions.*
-import org.junit.jupiter.api.*
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 class KnisterScoreTest {
     @Nested

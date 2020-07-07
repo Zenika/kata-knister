@@ -1,23 +1,29 @@
 package com.zenika.kata.knister.room
 
-import com.mongodb.client.MongoCollection
-import org.litote.kmongo.*
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.save
+import org.litote.kmongo.updateOne
+
 
 class MongoRoomRepository : RoomRepository {
-    private val client = KMongo.createClient()
-    private val collection: MongoCollection<Room> = client.getDatabase("knister").getCollection("rooms", Room::class.java)
+    private val mongoConnectionString = System.getenv("MONGOCSTRING")
+    private val roomCollection = KMongo.createClient(mongoConnectionString)
+                                                                .getDatabase("knister")
+                                                                .getCollection("rooms", Room::class.java)
 
     override fun create(room: Room): Room {
-        collection.save(room)
+        roomCollection.save(room)
         return room
     }
 
     override fun findOne(id: String): Room? {
-        return collection.findOneById(id)
+        return roomCollection.findOneById(id)
     }
 
     override fun update(room: Room): Room {
-        collection.updateOne(room)
+        roomCollection.updateOne(room)
         return room
     }
+
 }

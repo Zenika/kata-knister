@@ -1,18 +1,21 @@
 package com.zenika.kata.knister.room
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.containsInAnyOrder
+import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 // TODO injecter InMemoryRoomRespository pour ne pas dépendre de mongo.
 @ExtendWith(SpringExtension::class)
@@ -24,6 +27,10 @@ class KnisterRoomControllerTest() {
 
     @Autowired
     private lateinit var mapper: ObjectMapper
+
+    @SpyBean
+    private lateinit var repo : InMemoryRoomRepository
+
 
     @Test
     fun `given a room is opened it gets an id and a player`() {
