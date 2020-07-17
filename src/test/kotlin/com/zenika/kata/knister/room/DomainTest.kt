@@ -4,8 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.lang.IllegalStateException
 
-class KnisterRoomTest {
+class DomainTest {
     @Nested
     inner class RoomIdGeneratorTest {
 
@@ -52,5 +53,36 @@ class KnisterRoomTest {
         }
 
         // TODO : can we start a game if there is no player
+    }
+
+    @Nested
+    inner class GameTest {
+        @Test
+        fun `game allows dice rolls on started game` () {
+            val game = KnisterGame()
+            game.start()
+
+            val dices = game.rollDices()
+
+            assertThat(game.diceRolls).hasSize(1)
+            assertThat(dices).isEqualTo(game.diceRolls[0])
+        }
+
+        @Test
+        fun `game allows dice rolls only if the game is in progress` () {
+            val game = KnisterGame()
+
+            assertThatThrownBy { game.rollDices() }.isInstanceOf(IllegalStateException::class.java)
+        }
+
+        @Test
+        fun `game allows 25 dice rolls` () {
+            val game = KnisterGame()
+            game.start()
+
+            repeat(25) {game.rollDices()}
+
+            assertThatThrownBy { game.rollDices() }.isInstanceOf(IllegalStateException::class.java)
+        }
     }
 }

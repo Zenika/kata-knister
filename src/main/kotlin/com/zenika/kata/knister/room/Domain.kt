@@ -22,13 +22,37 @@ class Room() {
 
 data class Player(val name: String)
 
-data class KnisterGame(val diceRolls: MutableList<Integer> = mutableListOf<Integer>(), var started : Boolean = false) {
+data class KnisterGame(val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>(), var started : Boolean = false) {
     fun start() {
         started = true;
+    }
+
+    fun rollDices(): DiceRoll {
+        check(started)
+        check(diceRolls.size < 25)
+        val diceRoll = rollDicePair()
+        diceRolls.add(diceRoll)
+        return diceRoll
+    }
+}
+
+data class DiceRoll(val first : Dice, val second : Dice)
+
+data class Dice(val roll : Int) {
+    init {
+        check(roll in 1..6)
     }
 }
 
 fun generateRoomId(): String {
     val alphabet = ('a'..'z')
     return (1..10).map { alphabet.random() }.joinToString("")
+}
+
+fun rollDicePair() : DiceRoll {
+    return DiceRoll(rollDice(), rollDice())
+}
+
+fun rollDice() : Dice {
+    return Dice((1..6).random())
 }
