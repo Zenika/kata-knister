@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.lang.IllegalStateException
 import javax.servlet.http.HttpServletRequest
 
 
@@ -39,10 +40,13 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
     }
 
     // TODO : un jour nous lancerons des dés
-    @PostMapping("/{roomId}/games/dices")
-    fun rollDices(@PathVariable roomId: String) {
-        val room = getRoom(roomId)
-        //        room.currentGame.diceRolls.add(4)
+    @PostMapping("/{roomId}/games/roll")
+    fun rollDices(@PathVariable roomId: String) : KnisterGame {
+        var room = getRoom(roomId)
+        val game = getRoom(roomId).currentGame
+        game.rollDices()
+        roomRepository.update(room)
+        return game
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -55,6 +59,12 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(PlayerAlreadExistsException::class)
     fun handleGameBadRequest(req: HttpServletRequest, ex: Exception?) {
+
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(IllegalStateException::class)
+    fun handlerRequiresRequest(req: HttpServletRequest, ex: Exception?) {
 
     }
 

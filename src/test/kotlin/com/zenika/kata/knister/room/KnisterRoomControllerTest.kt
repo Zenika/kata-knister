@@ -99,6 +99,26 @@ class KnisterRoomControllerTest() {
     }
 
     @Test
+    fun `when game is started dices can be rolled`() {
+        var room = createRoom("Hugo")
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.diceRolls", notNullValue()))
+
+    }
+
+    @Test
+    fun `when game is not started dices cannot be rolled`() {
+        var room = createRoom("Hugo")
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().is4xxClientError())
+    }
+
+    @Test
     fun `impossible to start a game if already started`() {
         var room = createRoom("Hugo")
 
