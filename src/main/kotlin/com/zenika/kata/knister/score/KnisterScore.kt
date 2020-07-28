@@ -1,3 +1,5 @@
+import org.springframework.core.convert.TypeDescriptor.array
+
 enum class Figure(val combination: IntArray, val score: Int) {
     PAIR(intArrayOf(2, 1, 1, 1), 1),
     DOUBLE_PAIR(intArrayOf(2, 2, 1), 3),
@@ -13,6 +15,8 @@ fun findCorrespondingFigure(dices: IntArray): Figure? {
 }
 
 class Grid(private val lines : Array<IntArray>) {
+    constructor() : this(Array(5) { IntArray(5)} )
+
     fun score() : Int {
         var linesSum = lines.map {Line(it).score()}.sum();
 
@@ -26,6 +30,14 @@ class Grid(private val lines : Array<IntArray>) {
         val diagTwo = Line(lines.map { it[--i] }.toIntArray()).score()
 
         return linesSum + colsSum +  (diagOne + diagTwo)*2;
+    }
+
+    fun placeDices(x: Int, y: Int, score: Int) {
+        lines[y][x] = score
+    }
+
+    fun dicesPlaced(): Int {
+        return lines.flatMap { it.toList() }.filter{it != 0}.size
     }
 }
 class Line(private val diceResults: IntArray) {

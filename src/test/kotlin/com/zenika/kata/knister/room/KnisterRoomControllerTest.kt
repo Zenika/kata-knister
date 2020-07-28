@@ -118,6 +118,7 @@ class KnisterRoomControllerTest() {
                 .andExpect(status().is4xxClientError())
     }
 
+    // TODO : corriger le test
     @Test
     fun `impossible to start a game if already started`() {
         var room = createRoom("Hugo")

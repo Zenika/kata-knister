@@ -1,5 +1,7 @@
 package com.zenika.kata.knister.room
 
+import Grid
+
 class Room() {
     val _id: String = generateRoomId()
     val players: MutableSet<Player> = mutableSetOf()
@@ -17,37 +19,43 @@ class Room() {
         return games.last()
     }
     fun startGame(): KnisterGame {
-        if(gameAlreadyStarted()) {
-            throw GameAlreadyStartedException("Game already started")
-        }
-        val newGame = KnisterGame()
+        val newGame = KnisterGame(players.toSet())
         games.add(newGame)
-        newGame.start()
         return newGame
     }
 
-    private fun gameAlreadyStarted(): Boolean {
-        return games.lastOrNull()?.started?:false
-    }
 }
 
 data class Player(val name: String)
 
-data class KnisterGame(val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>(), var started : Boolean = false) {
-    fun start() {
-        started = true;
+class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
+    val gridsForPlayers = players.map { it to Grid() }.toMap()
+    init {
+        check(players.isNotEmpty())
     }
 
     fun rollDices(): DiceRoll {
-        check(started)
+        check(roundOver())
         check(diceRolls.size < 25)
         val diceRoll = rollDicePair()
         diceRolls.add(diceRoll)
         return diceRoll
     }
+
+    private fun roundOver(): Boolean {
+        return gridsForPlayers.values.all { it.dicesPlaced() == diceRolls.size }
+    }
+
+    fun playerPlacesDicesInSquare(player : Player, x: Int, y: Int) {
+        gridsForPlayers[player]!!.placeDices(x, y, diceRolls.last().score())
+    }
 }
 
-data class DiceRoll(val first : Dice, val second : Dice)
+data class DiceRoll(val first : Dice, val second : Dice) {
+    fun score() : Int {
+        return first.roll+second.roll
+    }
+}
 
 data class Dice(val roll : Int) {
     init {

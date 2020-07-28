@@ -59,8 +59,7 @@ class DomainTest {
     inner class GameTest {
         @Test
         fun `game allows dice rolls on started game` () {
-            val game = KnisterGame()
-            game.start()
+            val game = KnisterGame(setOf(Player("toto")))
 
             val dices = game.rollDices()
 
@@ -69,18 +68,34 @@ class DomainTest {
         }
 
         @Test
-        fun `game allows dice rolls only if the game is in progress` () {
-            val game = KnisterGame()
+        fun `game can start only if list of players is not empty` () {
+            assertThatThrownBy { KnisterGame(emptySet()) }.isInstanceOf(IllegalStateException::class.java)
+        }
+
+        @Test
+        fun `game allows dice rolls only if round is over` () {
+            val game = KnisterGame(setOf(Player("toto")))
+            game.rollDices()
 
             assertThatThrownBy { game.rollDices() }.isInstanceOf(IllegalStateException::class.java)
         }
 
         @Test
-        fun `game allows 25 dice rolls` () {
-            val game = KnisterGame()
-            game.start()
+        fun `game allows dice rolls when round is over` () {
+            val game = KnisterGame(setOf(Player("toto")))
+            game.rollDices()
+            game.playerPlacesDicesInSquare(Player("toto"), 1, 2)
+            game.rollDices()
+        }
 
-            repeat(25) {game.rollDices()}
+        @Test
+        fun `game allows 25 dice rolls` () {
+            val game = KnisterGame(setOf(Player("toto")))
+
+            for(i in 0  until 25) {
+                game.rollDices()
+                game.playerPlacesDicesInSquare(Player("toto"), i / 5, i % 5)
+            }
 
             assertThatThrownBy { game.rollDices() }.isInstanceOf(IllegalStateException::class.java)
         }

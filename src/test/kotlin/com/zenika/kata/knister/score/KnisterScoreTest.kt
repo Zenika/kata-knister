@@ -166,6 +166,13 @@ class KnisterScoreTest {
             // Assert
             assertThat(result).isEqualTo(53)
         }
+
+        @Test
+        fun `grid initialized with empty squares`() {
+            val grid = Grid()
+
+            assertThat(grid.dicesPlaced()).isEqualTo(0)
+        }
     }
 
 }
