@@ -43,7 +43,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
     @PostMapping("/{roomId}/games/roll")
     fun rollDices(@PathVariable roomId: String) : KnisterGame {
         var room = getRoom(roomId)
-        val game = getRoom(roomId).currentGame
+        val game = getRoom(roomId).currentGame()
         game.rollDices()
         roomRepository.update(room)
         return game
@@ -51,22 +51,16 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(GameAlreadyStartedException::class)
-    fun handleBadRequest(req: HttpServletRequest, ex: Exception?) {
-
-    }
+    fun handleBadRequest(req: HttpServletRequest, ex: Exception?) {}
 
     // TODO : avoir un seul handler
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(PlayerAlreadExistsException::class)
-    fun handleGameBadRequest(req: HttpServletRequest, ex: Exception?) {
-
-    }
+    fun handleGameBadRequest(req: HttpServletRequest, ex: Exception?) {}
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(IllegalStateException::class)
-    fun handlerRequiresRequest(req: HttpServletRequest, ex: Exception?) {
-
-    }
+    fun handlerRequiresRequest(req: HttpServletRequest, ex: Exception?) {}
 
 }
 

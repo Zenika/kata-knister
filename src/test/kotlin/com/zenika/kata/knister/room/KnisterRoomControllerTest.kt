@@ -106,7 +106,7 @@ class KnisterRoomControllerTest() {
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.diceRolls", notNullValue()))
+                .andExpect(jsonPath("$.diceRolls[0]", notNullValue()))
 
     }
 

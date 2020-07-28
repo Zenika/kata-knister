@@ -3,7 +3,7 @@ package com.zenika.kata.knister.room
 class Room() {
     val _id: String = generateRoomId()
     val players: MutableSet<Player> = mutableSetOf()
-    val currentGame : KnisterGame = KnisterGame()
+    val games : MutableList<KnisterGame> = mutableListOf()
 
     fun addPlayer(player: Player) {
         if (players.contains(player))
@@ -12,11 +12,22 @@ class Room() {
         players.add(player)
     }
 
+    fun currentGame(): KnisterGame {
+        check(games.isNotEmpty())
+        return games.last()
+    }
     fun startGame(): KnisterGame {
-        if(currentGame.started)
+        if(gameAlreadyStarted()) {
             throw GameAlreadyStartedException("Game already started")
-        currentGame.start()
-        return currentGame
+        }
+        val newGame = KnisterGame()
+        games.add(newGame)
+        newGame.start()
+        return newGame
+    }
+
+    private fun gameAlreadyStarted(): Boolean {
+        return games.lastOrNull()?.started?:false
     }
 }
 
