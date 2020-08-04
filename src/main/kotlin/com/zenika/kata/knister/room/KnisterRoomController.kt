@@ -48,6 +48,14 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         return rollDices
     }
 
+    @PostMapping("/{roomId}/games/{player}/grid")
+    fun placeDiceInGrid(@PathVariable roomId: String, @PathVariable player: String, @RequestBody gridPosition: GridPosition) {
+        var room = getRoom(roomId)
+        val game = room.currentGame()
+        val rollDices = game.playerPlacesDicesInSquare(Player(player), gridPosition)
+        roomRepository.update(room)
+    }
+
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(GameAlreadyStartedException::class)
     fun handleBadRequest(req: HttpServletRequest, ex: Exception?) {}

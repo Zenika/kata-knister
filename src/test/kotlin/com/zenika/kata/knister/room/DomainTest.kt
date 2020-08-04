@@ -84,7 +84,7 @@ class DomainTest {
         fun `game allows dice rolls when round is over` () {
             val game = KnisterGame(setOf(Player("toto")))
             game.rollDices()
-            game.playerPlacesDicesInSquare(Player("toto"), 1, 2)
+            game.playerPlacesDicesInSquare(Player("toto"), GridPosition(1, 2))
             game.rollDices()
         }
 
@@ -94,7 +94,7 @@ class DomainTest {
 
             for(i in 0  until 25) {
                 game.rollDices()
-                game.playerPlacesDicesInSquare(Player("toto"), i / 5, i % 5)
+                game.playerPlacesDicesInSquare(Player("toto"), GridPosition(i / 5, i % 5))
             }
 
             assertThatThrownBy { game.rollDices() }.isInstanceOf(IllegalStateException::class.java)

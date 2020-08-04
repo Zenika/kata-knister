@@ -51,8 +51,8 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
         return gridsForPlayers.values.all { it.dicesPlaced() == diceRolls.size }
     }
 
-    fun playerPlacesDicesInSquare(player : Player, x: Int, y: Int) {
-        gridsForPlayers[player]!!.placeDices(x, y, diceRolls.last().score())
+    fun playerPlacesDicesInSquare(player : Player, gridPosition: GridPosition) {
+        gridsForPlayers[player]!!.placeDices(gridPosition, diceRolls.last().score())
     }
 
     fun isOver(): Boolean {
@@ -71,6 +71,8 @@ data class Dice(val roll : Int) {
         check(roll in 1..6)
     }
 }
+
+data class GridPosition(val x: Int, val y: Int);
 
 fun generateRoomId(): String {
     val alphabet = ('a'..'z')

@@ -1,3 +1,4 @@
+import com.zenika.kata.knister.room.GridPosition
 import org.springframework.core.convert.TypeDescriptor.array
 
 enum class Figure(val combination: IntArray, val score: Int) {
@@ -32,8 +33,8 @@ class Grid(private val lines : Array<IntArray>) {
         return linesSum + colsSum +  (diagOne + diagTwo)*2;
     }
 
-    fun placeDices(x: Int, y: Int, score: Int) {
-        lines[y][x] = score
+    fun placeDices(gridPosition: GridPosition, score: Int) {
+        lines[gridPosition.y][gridPosition.x] = score
     }
 
     fun dicesPlaced(): Int {

@@ -111,6 +111,23 @@ class KnisterRoomControllerTest() {
     }
 
     @Test
+    fun `when dices are rolled player can place it in the grid`() {
+        val playerName = "Hugo"
+        val room = createRoom(playerName)
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(GridPosition(0,0))))
+                .andExpect(status().isOk())
+
+    }
+
+    @Test
     fun `when game is not started dices cannot be rolled`() {
         var room = createRoom("Hugo")
 
