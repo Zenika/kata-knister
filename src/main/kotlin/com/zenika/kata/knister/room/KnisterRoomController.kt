@@ -32,6 +32,13 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         roomRepository.update(room)
     }
 
+    @DeleteMapping("/{roomId}/players")
+    fun leaveRoom(@PathVariable roomId: String, @RequestBody player: Player) {
+        var room = getRoom(roomId)
+        room.removePlayer(player)
+        roomRepository.update(room)
+    }
+
     @PostMapping("/{roomId}/games")
     fun startGame(@PathVariable roomId: String): KnisterGame {
         var room = getRoom(roomId)

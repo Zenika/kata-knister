@@ -13,8 +13,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -192,6 +191,23 @@ class KnisterRoomControllerTest() {
         mvc.perform(get("/rooms/${room._id}/games/${playerName}/grid"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lines", notNullValue()))
+    }
+
+
+    @Test
+    fun `when a player leaves the room it is no more on the list`() {
+        val playerName = "Hugo"
+        val leaverName = "Leaver"
+        val room = createRoom(playerName)
+        room.addPlayer(leaverName)
+        mvc.perform(delete("/rooms/${room._id}/players")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(Player(leaverName))))
+                .andExpect(status().isOk())
+
+        mvc.perform(get("/rooms/${room._id}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Hugo")))
     }
 
     @Test

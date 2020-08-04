@@ -17,6 +17,10 @@ class Room() {
         players.add(player)
     }
 
+    fun removePlayer(player: Player) {
+        players.remove(player)
+    }
+
     fun currentGame(): KnisterGame {
         check(games.isNotEmpty())
         return games.last()
@@ -30,6 +34,7 @@ class Room() {
         games.add(newGame)
         return newGame
     }
+
 
 }
 
