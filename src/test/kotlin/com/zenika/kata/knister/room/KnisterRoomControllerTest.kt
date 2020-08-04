@@ -128,6 +128,53 @@ class KnisterRoomControllerTest() {
     }
 
     @Test
+    fun `player cannot place its diceroll twice in the grid`() {
+        val playerName = "Hugo"
+        val room = createRoom(playerName)
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(GridPosition(0,0))))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(GridPosition(1,1))))
+                .andExpect(status().is4xxClientError())
+
+    }
+
+    @Test
+    fun `player cannot place two dicerolls on the same position`() {
+        val playerName = "Hugo"
+        val room = createRoom(playerName)
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(GridPosition(0,0))))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(GridPosition(0,0))))
+                .andExpect(status().is4xxClientError())
+
+    }
+
+    @Test
     fun `when game is not started dices cannot be rolled`() {
         var room = createRoom("Hugo")
 
@@ -135,7 +182,6 @@ class KnisterRoomControllerTest() {
                 .andExpect(status().is4xxClientError())
     }
 
-    // TODO : corriger le test
     @Test
     fun `impossible to start a game if already started`() {
         var room = createRoom("Hugo")
