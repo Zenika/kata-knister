@@ -1,9 +1,6 @@
 package com.zenika.kata.knister.room
 
 import Grid
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
-import kotlin.math.round
 
 class Room() {
     val _id: String = generateRoomId()
@@ -43,7 +40,7 @@ class Room() {
 
 data class Player(val name: String)
 
-class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
+class KnisterGame(players : Set<Player>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
     val gridsForPlayers = players.map { it to Grid() }.toMap().toMutableMap()
     var cancelled = false
     init {
@@ -54,7 +51,7 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
 
     fun rollDices(): DiceRoll {
         check(roundOver())
-        check(diceRolls.size < roundsNumber)
+        check(!isOver())
         val diceRoll = rollDicePair()
         diceRolls.add(diceRoll)
         return diceRoll
@@ -70,13 +67,14 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
         playerGrid.placeDices(gridPosition, diceRolls.last().score())
     }
 
-    fun isOver(): Boolean {
+    private fun isOver(): Boolean {
         return diceRolls.size == roundsNumber && roundOver()
     }
 
     fun isRunning(): Boolean {
         return !cancelled && !isOver()
     }
+
     fun score(player: Player): Int {
         check(isOver())
         val grid = gridsForPlayers.getOrElse(player) { throw IllegalArgumentException("non existing player") }
@@ -84,7 +82,10 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
     }
 
     fun removePlayer(player: Player) {
-        gridsForPlayers.remove(player)
+        val remove = gridsForPlayers.remove(player)
+        if(remove == null) {
+            throw IllegalArgumentException("non existing player")
+        }
         if(gridsForPlayers.isEmpty()) {
             cancelled = true
         }
@@ -103,7 +104,7 @@ data class Dice(val roll : Int) {
     }
 }
 
-data class GridPosition(val x: Int, val y: Int);
+data class GridPosition(val x: Int, val y: Int)
 
 fun generateRoomId(): String {
     val alphabet = ('a'..'z')

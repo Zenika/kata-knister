@@ -27,21 +27,21 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @PostMapping("/{roomId}/players")
     fun joinRoom(@PathVariable roomId: String, @RequestBody player: Player) {
-        var room = getRoom(roomId)
+        val room = getRoom(roomId)
         room.addPlayer(player)
         roomRepository.update(room)
     }
 
     @DeleteMapping("/{roomId}/players")
     fun leaveRoom(@PathVariable roomId: String, @RequestBody player: Player) {
-        var room = getRoom(roomId)
+        val room = getRoom(roomId)
         room.removePlayer(player)
         roomRepository.update(room)
     }
 
     @PostMapping("/{roomId}/games")
     fun startGame(@PathVariable roomId: String): KnisterGame {
-        var room = getRoom(roomId)
+        val room = getRoom(roomId)
         val game = room.startGame()
         roomRepository.update(room)
         return game
@@ -49,7 +49,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @PostMapping("/{roomId}/games/roll")
     fun rollDices(@PathVariable roomId: String) : DiceRoll {
-        var room = getRoom(roomId)
+        val room = getRoom(roomId)
         val game = room.currentGame()
         val rollDices = game.rollDices()
         roomRepository.update(room)
@@ -58,7 +58,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @PostMapping("/{roomId}/games/{player}/grid")
     fun placeDiceInGrid(@PathVariable roomId: String, @PathVariable player: String, @RequestBody gridPosition: GridPosition) {
-        var room = getRoom(roomId)
+        val room = getRoom(roomId)
         val game = room.currentGame()
         game.playerPlacesDicesInSquare(Player(player), gridPosition)
         roomRepository.update(room)

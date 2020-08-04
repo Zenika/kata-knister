@@ -1,5 +1,4 @@
 import com.zenika.kata.knister.room.GridPosition
-import org.springframework.core.convert.TypeDescriptor.array
 
 enum class Figure(val combination: IntArray, val score: Int) {
     PAIR(intArrayOf(2, 1, 1, 1), 1),
@@ -19,18 +18,18 @@ class Grid(val lines : Array<IntArray>) {
     constructor() : this(Array(5) { IntArray(5)} )
 
     fun score() : Int {
-        var linesSum = lines.map {Line(it).score()}.sum();
+        val linesSum = lines.map {Line(it).score()}.sum()
 
-        var cols = Array<Line>(5) { i ->
+        val cols = Array<Line>(5) { i ->
             Line(lines.map{ it[i] }.toIntArray())
-        };
-        var colsSum = cols.map(Line::score).sum();
+        }
+        val colsSum = cols.map(Line::score).sum()
 
         var i = 0 
-        var diagOne = Line(lines.map { it[i++] }.toIntArray()).score()
+        val diagOne = Line(lines.map { it[i++] }.toIntArray()).score()
         val diagTwo = Line(lines.map { it[--i] }.toIntArray()).score()
 
-        return linesSum + colsSum +  (diagOne + diagTwo)*2;
+        return linesSum + colsSum +  (diagOne + diagTwo)*2
     }
 
     fun placeDices(gridPosition: GridPosition, score: Int) {
