@@ -129,5 +129,29 @@ class DomainTest {
 
             assertThatThrownBy { game.rollDices() }.isInstanceOf(IllegalStateException::class.java)
         }
+
+        @Test
+        fun `player can get his score when game is over` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+
+            for(i in 0  until 25) {
+                game.rollDices()
+                game.playerPlacesDicesInSquare(player, GridPosition(i / 5, i % 5))
+            }
+
+            assertThat(game.score(player)).isPositive()
+        }
+
+        @Test
+        fun `player cant get his score when game is not over` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+
+            game.rollDices()
+
+            assertThatThrownBy { game.score(player) }.isInstanceOf(IllegalStateException::class.java)
+        }
+
     }
 }

@@ -41,9 +41,11 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
         check(players.isNotEmpty())
     }
 
+    private val roundsNumber = 25
+
     fun rollDices(): DiceRoll {
         check(roundOver())
-        check(diceRolls.size < 25)
+        check(diceRolls.size < roundsNumber)
         val diceRoll = rollDicePair()
         diceRolls.add(diceRoll)
         return diceRoll
@@ -60,7 +62,13 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
     }
 
     fun isOver(): Boolean {
-        return diceRolls.size == 25 && roundOver()
+        return diceRolls.size == roundsNumber && roundOver()
+    }
+
+    fun score(player: Player): Int {
+        check(isOver())
+        val grid = gridsForPlayers.getOrElse(player) { throw IllegalArgumentException("non existing player") }
+        return grid.score()
     }
 }
 
