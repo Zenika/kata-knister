@@ -52,6 +52,19 @@ class DomainTest {
             assertThatThrownBy { myRoom.startGame() }.isInstanceOf(GameAlreadyStartedException::class.java)
         }
 
+        @Test
+        fun `when a player leaves the room he also leaves the current game` () {
+            val myRoom = Room()
+            myRoom.addPlayer(Player("toto"))
+            val leaver = Player("titi")
+            myRoom.addPlayer(leaver)
+            val currentGame = myRoom.startGame()
+            myRoom.removePlayer(leaver)
+            currentGame.rollDices()
+
+            assertThatThrownBy { currentGame.playerPlacesDicesInSquare(leaver, GridPosition(0,0))}.isInstanceOf(IllegalArgumentException::class.java)
+
+        }
         // TODO : can we start a game if there is no player
     }
 
@@ -151,6 +164,17 @@ class DomainTest {
             game.rollDices()
 
             assertThatThrownBy { game.score(player) }.isInstanceOf(IllegalStateException::class.java)
+        }
+
+        @Test
+        fun `when all the players og a game leave the game is cancelled` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+            game.rollDices()
+
+            game.removePlayer(player)
+
+            assertThat(game.isRunning()).isFalse();
         }
 
     }

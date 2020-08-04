@@ -19,6 +19,10 @@ class Room() {
 
     fun removePlayer(player: Player) {
         players.remove(player)
+        val currentGame = games.lastOrNull()
+        if(currentGame != null && currentGame.isRunning()) {
+            currentGame.removePlayer(player)
+        }
     }
 
     fun currentGame(): KnisterGame {
@@ -26,8 +30,7 @@ class Room() {
         return games.last()
     }
     fun startGame(): KnisterGame {
-        val currentGame = games.lastOrNull()
-        if(currentGame != null && !currentGame.isOver()) {
+        if(games.lastOrNull()?.isRunning() ?: false) {
             throw GameAlreadyStartedException("partie en cours")
         }
         val newGame = KnisterGame(players.toSet())
@@ -41,7 +44,8 @@ class Room() {
 data class Player(val name: String)
 
 class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
-    val gridsForPlayers = players.map { it to Grid() }.toMap()
+    val gridsForPlayers = players.map { it to Grid() }.toMap().toMutableMap()
+    var cancelled = false
     init {
         check(players.isNotEmpty())
     }
@@ -70,10 +74,20 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
         return diceRolls.size == roundsNumber && roundOver()
     }
 
+    fun isRunning(): Boolean {
+        return !cancelled && !isOver()
+    }
     fun score(player: Player): Int {
         check(isOver())
         val grid = gridsForPlayers.getOrElse(player) { throw IllegalArgumentException("non existing player") }
         return grid.score()
+    }
+
+    fun removePlayer(player: Player) {
+        gridsForPlayers.remove(player)
+        if(gridsForPlayers.isEmpty()) {
+            cancelled = true
+        }
     }
 }
 
