@@ -22,13 +22,15 @@ class KnisterScoreControllerTest () {
     @Test
     fun `given a grid the controller compute the score`() {
         var grid = """{
-            "grid": [ 
-                [7,  4,  8, 9, 11],
-                [3,  7,  3, 7,  7],
-                [5,  5, 10, 5,  5],
-                [8,  9,  3, 6,  9],
-                [8, 11,  8, 8,  7] 
-            ]
+            "grid": {
+                "lines": [ 
+                    [7,  4,  8, 9, 11],
+                    [3,  7,  3, 7,  7],
+                    [5,  5, 10, 5,  5],
+                    [8,  9,  3, 6,  9],
+                    [8, 11,  8, 8,  7]
+                 ]
+            }
         }"""
 
         mvc.perform(post("/score")

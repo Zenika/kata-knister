@@ -3,6 +3,7 @@ package com.zenika.kata.knister.room
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.hamcrest.Matchers.notNullValue
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -172,6 +173,25 @@ class KnisterRoomControllerTest() {
                 .content(mapper.writeValueAsString(GridPosition(0,0))))
                 .andExpect(status().is4xxClientError())
 
+    }
+
+    @Test
+    fun `player can get his grid info`() {
+        val playerName = "Hugo"
+        val room = createRoom(playerName)
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(GridPosition(0,0))))
+                .andExpect(status().isOk())
+
+        mvc.perform(get("/rooms/${room._id}/games/${playerName}/grid"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lines", notNullValue()))
     }
 
     @Test

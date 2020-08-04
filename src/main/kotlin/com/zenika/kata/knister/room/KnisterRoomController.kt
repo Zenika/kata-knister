@@ -1,5 +1,6 @@
 package com.zenika.kata.knister.room
 
+import Grid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -52,8 +53,15 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
     fun placeDiceInGrid(@PathVariable roomId: String, @PathVariable player: String, @RequestBody gridPosition: GridPosition) {
         var room = getRoom(roomId)
         val game = room.currentGame()
-        val rollDices = game.playerPlacesDicesInSquare(Player(player), gridPosition)
+        game.playerPlacesDicesInSquare(Player(player), gridPosition)
         roomRepository.update(room)
+    }
+
+    @GetMapping("/{roomId}/games/{player}/grid")
+    fun getGrid(@PathVariable roomId: String, @PathVariable player: String): Grid {
+        val room = roomRepository.findOne(roomId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return room.currentGame().gridsForPlayers[Player(player)] ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)

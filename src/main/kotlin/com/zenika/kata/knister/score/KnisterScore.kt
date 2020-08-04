@@ -15,7 +15,7 @@ fun findCorrespondingFigure(dices: IntArray): Figure? {
     return Figure.values().find { it.combination contentEquals dices }
 }
 
-class Grid(private val lines : Array<IntArray>) {
+class Grid(val lines : Array<IntArray>) {
     constructor() : this(Array(5) { IntArray(5)} )
 
     fun score() : Int {
