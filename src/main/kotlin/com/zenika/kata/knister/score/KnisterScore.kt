@@ -34,6 +34,7 @@ class Grid(private val lines : Array<IntArray>) {
     }
 
     fun placeDices(gridPosition: GridPosition, score: Int) {
+        require(lines[gridPosition.y][gridPosition.x] == 0)
         lines[gridPosition.y][gridPosition.x] = score
     }
 

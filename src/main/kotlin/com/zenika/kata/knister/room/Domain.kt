@@ -1,6 +1,8 @@
 package com.zenika.kata.knister.room
 
 import Grid
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import kotlin.math.round
 
 class Room() {
@@ -52,7 +54,9 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
     }
 
     fun playerPlacesDicesInSquare(player : Player, gridPosition: GridPosition) {
-        gridsForPlayers[player]!!.placeDices(gridPosition, diceRolls.last().score())
+        val playerGrid = gridsForPlayers.getOrElse(player) { throw IllegalArgumentException("non existing player") }
+        if(playerGrid.dicesPlaced() == diceRolls.size) { throw IllegalStateException("diceRoll already placed for player ${player.name}") }
+        playerGrid.placeDices(gridPosition, diceRolls.last().score())
     }
 
     fun isOver(): Boolean {

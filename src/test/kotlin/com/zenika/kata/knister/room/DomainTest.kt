@@ -89,6 +89,36 @@ class DomainTest {
         }
 
         @Test
+        fun `player cannot place roll if he is not registered for the game` () {
+            val game = KnisterGame(setOf(Player("toto")))
+            game.rollDices()
+
+            assertThatThrownBy { game.playerPlacesDicesInSquare(Player("titi"), GridPosition(1, 2)) }.isInstanceOf(IllegalArgumentException::class.java)
+        }
+
+        @Test
+        fun `player cannot place the same roll twice` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+            game.rollDices()
+            game.playerPlacesDicesInSquare(player, GridPosition(1, 2))
+
+            assertThatThrownBy { game.playerPlacesDicesInSquare(player, GridPosition(2, 3)) }.isInstanceOf(IllegalStateException::class.java)
+        }
+
+        @Test
+        fun `player cannot place two rolls on the same position` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+            game.rollDices()
+            val duplicateGridPosition = GridPosition(1, 2)
+            game.playerPlacesDicesInSquare(player, duplicateGridPosition)
+            game.rollDices()
+
+            assertThatThrownBy { game.playerPlacesDicesInSquare(player, duplicateGridPosition) }.isInstanceOf(IllegalArgumentException::class.java)
+        }
+
+        @Test
         fun `game allows 25 dice rolls` () {
             val game = KnisterGame(setOf(Player("toto")))
 
