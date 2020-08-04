@@ -39,14 +39,13 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         return game
     }
 
-    // TODO : un jour nous lancerons des dés
     @PostMapping("/{roomId}/games/roll")
-    fun rollDices(@PathVariable roomId: String) : KnisterGame {
+    fun rollDices(@PathVariable roomId: String) : DiceRoll {
         var room = getRoom(roomId)
-        val game = getRoom(roomId).currentGame()
-        game.rollDices()
+        val game = room.currentGame()
+        val rollDices = game.rollDices()
         roomRepository.update(room)
-        return game
+        return rollDices
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
