@@ -1,6 +1,7 @@
 package com.zenika.kata.knister.room
 
 import Grid
+import kotlin.math.round
 
 class Room() {
     val _id: String = generateRoomId()
@@ -19,6 +20,10 @@ class Room() {
         return games.last()
     }
     fun startGame(): KnisterGame {
+        val currentGame = games.lastOrNull()
+        if(currentGame != null && !currentGame.isOver()) {
+            throw GameAlreadyStartedException("partie en cours")
+        }
         val newGame = KnisterGame(players.toSet())
         games.add(newGame)
         return newGame
@@ -48,6 +53,10 @@ class KnisterGame(val players : Set<Player>, val diceRolls: MutableList<DiceRoll
 
     fun playerPlacesDicesInSquare(player : Player, x: Int, y: Int) {
         gridsForPlayers[player]!!.placeDices(x, y, diceRolls.last().score())
+    }
+
+    fun isOver(): Boolean {
+        return diceRolls.size == 25 && roundOver()
     }
 }
 
