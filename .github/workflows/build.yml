@@ -22,6 +22,7 @@ jobs:
           with:
             java-version: 11
         - run: mvn install
+        - run: mvn test
 
     # steps:
     # - uses: actions/checkout@v2
