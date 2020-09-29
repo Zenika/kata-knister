@@ -25,18 +25,11 @@ Feature: Create new room
     And request {}
     When method POST
     Then status 200
-    And match response == { cancelled: false, diceRolls: [], gridsForPlayers: #object }
-
-    # Start an already started game
-    Given url 'http://localhost:8080/rooms/'+roomId+'/games'
-    And request {}
-    When method POST
-    Then status 409
+    And match response == { cancelled: false, running:true, diceRolls: [], gridsForPlayers: #object }
 
     # Roll dices
     Given url 'http://localhost:8080/rooms/'+roomId+'/games/roll'
     And request {}
     When method POST
     Then status 200
-    And match response == { diceRolls: '#[]' }
-    And match response.diceRolls contains any [1,2,3,4,5,6]
+    And match response == { first: {roll:#number}, second: {roll:#number} }

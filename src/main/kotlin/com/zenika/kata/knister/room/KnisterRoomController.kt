@@ -71,6 +71,10 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     }
 
+    // TODO : request to get the scores for the current game and/or for any game of the room
+
+
+
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(value = [GameAlreadyStartedException::class,
                                 PlayerAlreadExistsException::class,

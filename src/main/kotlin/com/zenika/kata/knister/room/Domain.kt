@@ -40,11 +40,13 @@ class Room() {
 
 data class Player(val name: String)
 
-class KnisterGame(players : Set<Player>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
-    val gridsForPlayers = players.map { it to Grid() }.toMap().toMutableMap()
+class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
+    constructor(players : Set<Player> = mutableSetOf()) : this(players.map { it to Grid() }.toMap().toMutableMap()) {
+
+    }
     var cancelled = false
     init {
-        check(players.isNotEmpty())
+        check(gridsForPlayers.isNotEmpty())
     }
 
     private val roundsNumber = 25
@@ -115,6 +117,7 @@ fun rollDicePair() : DiceRoll {
     return DiceRoll(rollDice(), rollDice())
 }
 
+//TODO : avoir un service pour lancer les dés pour pouvoir simuler le random pour les tests et/ou appeler un api externe
 fun rollDice() : Dice {
     return Dice((1..6).random())
 }
