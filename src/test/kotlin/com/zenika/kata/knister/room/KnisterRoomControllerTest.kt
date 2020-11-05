@@ -174,6 +174,30 @@ class KnisterRoomControllerTest() {
 
     }
 
+
+    @Test
+    fun `player can get his score when game is over` () {
+        val playerName = "Hugo"
+        val room = createRoom(playerName)
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+
+        for(i in 0  until 25) {
+
+            mvc.perform(post("/rooms/${room._id}/games/roll"))
+                    .andExpect(status().isOk())
+
+            mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mapper.writeValueAsString(GridPosition(i / 5, i % 5))))
+                    .andExpect(status().isOk())
+        }
+        mvc.perform(get("/rooms/${room._id}/games/scores"))
+                .andExpect(status().isOk())
+
+
+    }
+
     @Test
     fun `player can get his grid info`() {
         val playerName = "Hugo"

@@ -72,9 +72,11 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     }
 
-    // TODO : request to get the scores for the current game and/or for any game of the room
-
-
+    @GetMapping("/{roomId}/games/scores")
+    fun getScores(@PathVariable roomId: String): Map<Player, Int> {
+        val room = roomRepository.findOne(roomId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return room.currentGame().scores()
+    }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(value = [

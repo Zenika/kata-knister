@@ -96,6 +96,11 @@ class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls:
             cancelled = true
         }
     }
+
+    fun scores(): Map<Player, Int> {
+        check(isOver())
+        return gridsForPlayers.mapValues { it.value.score() }
+    }
 }
 
 data class DiceRoll(val first : Dice, val second : Dice) {

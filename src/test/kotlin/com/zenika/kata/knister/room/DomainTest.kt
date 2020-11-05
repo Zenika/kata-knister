@@ -167,6 +167,30 @@ class DomainTest {
         }
 
         @Test
+        fun `when game is not over score game is not available` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+
+            game.rollDices()
+            game.playerPlacesDicesInSquare(player, GridPosition(0, 0))
+
+            assertThatThrownBy { game.score(player) }.isInstanceOf(IllegalStateException::class.java)
+        }
+
+        @Test
+        fun `when game is over score game for all players is available` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+
+            for(i in 0  until 25) {
+                game.rollDices()
+                game.playerPlacesDicesInSquare(player, GridPosition(i / 5, i % 5))
+            }
+
+            assertThat(game.scores()).isNotEmpty()
+        }
+
+        @Test
         fun `when all the players og a game leave the game is cancelled` () {
             val player = Player("toto")
             val game = KnisterGame(setOf(player))
