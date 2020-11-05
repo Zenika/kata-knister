@@ -76,11 +76,18 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(value = [GameAlreadyStartedException::class,
-                                PlayerAlreadExistsException::class,
-                                IllegalArgumentException::class,
-                                IllegalStateException::class])
-    fun handlerCheckRequest(req: HttpServletRequest, ex: Exception?) {}
+    @ExceptionHandler(value = [
+        GameAlreadyStartedException::class,
+                                PlayerAlreadExistsException::class
+    ])
+    fun handlerConflictRequest(req: HttpServletRequest, ex: Exception?) {}
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = [
+        IllegalArgumentException::class,
+        IllegalStateException::class
+    ])
+    fun handlerBadRequestRequest(req: HttpServletRequest, ex: Exception?) {}
 
 }
 
