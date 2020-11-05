@@ -38,7 +38,11 @@ class Room() {
 
 }
 
-data class Player(val name: String)
+data class Player(val name: String) {
+    override fun toString(): String {
+        return name;
+    }
+}
 
 class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls: MutableList<DiceRoll> = mutableListOf<DiceRoll>()) {
     constructor(players : Set<Player> = mutableSetOf()) : this(players.map { it to Grid() }.toMap().toMutableMap()) {
