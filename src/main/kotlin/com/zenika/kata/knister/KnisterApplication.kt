@@ -27,4 +27,6 @@ class KnisterConfiguration {
 
 	@Bean
 	fun productApi() : Docket  = Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.zenika.kata.knister.room")).build()
+
+
 }

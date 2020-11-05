@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/rooms")
+@CrossOrigin(origins = ["http://localhost:3000"])
 class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
 
     @PostMapping

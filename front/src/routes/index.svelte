@@ -1,48 +1,47 @@
 <style>
-	h1, figure, p {
-		text-align: center;
-		margin: 0 auto;
-	}
-
-	h1 {
-		font-size: 2.8em;
-		text-transform: uppercase;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
-
-	figure {
-		margin: 0 0 1em 0;
-	}
-
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
-
-	p {
-		margin: 1em auto;
-	}
-
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
 </style>
 
 <svelte:head>
-	<title>Sapper project template</title>
+	<title>Knister</title>
 </svelte:head>
 
-<h1>Great success!!</h1>
+{#if playerName}
+	<h1>Bonjour {playerName}</h1>
 
-<figure>
-	<img alt='Success Kid' src='successkid.jpg'>
-	<figcaption>Have fun with Sapper!</figcaption>
-</figure>
+	<button on:click={createRoom} type="button">Créer une salle 🤘</button>
+{:else}
+	<form on:submit|preventDefault={connect}>
+		<input type="text" name="playerName" bind:value={inputPlayerName} placeholder="Entrer un nom...">
+		<button type="submit">Enregistrer</button>
+	</form>
+{/if}
 
-coucou
+<script lang="ts">
+import { onMount } from 'svelte';
 
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+let playerName: string = '';
+let inputPlayerName: string;
+
+onMount(() => {
+	playerName = window.localStorage.getItem('playerName');
+});
+
+function connect(e) {
+	window.localStorage.setItem('playerName', inputPlayerName);
+	playerName = inputPlayerName;
+}
+
+async function createRoom() {
+const req = await fetch('http://localhost:8080/rooms', {
+	method: 'POST',
+	headers: {
+      'Content-Type': 'application/json'
+    },
+	body: JSON.stringify({
+		name: playerName
+	})
+});
+
+console.log(req);
+}
+</script>
