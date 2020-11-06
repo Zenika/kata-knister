@@ -78,6 +78,12 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         return room.currentGame().scores()
     }
 
+    @GetMapping("/{roomId}/games/status")
+    fun getGameStatus(@PathVariable roomId: String): GameStatus {
+        val room = roomRepository.findOne(roomId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return room.currentGame().toGameStatus()
+    }
+
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(value = [
         GameAlreadyStartedException::class,

@@ -191,7 +191,7 @@ class DomainTest {
         }
 
         @Test
-        fun `when all the players og a game leave the game is cancelled` () {
+        fun `when all the players of a game leave the game is cancelled` () {
             val player = Player("toto")
             val game = KnisterGame(setOf(player))
             game.rollDices()
@@ -199,6 +199,32 @@ class DomainTest {
             game.removePlayer(player)
 
             assertThat(game.isRunning()).isFalse();
+        }
+
+        @Test
+        fun `game status can be extract from game` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+
+
+            val gameStatus = game.toGameStatus()
+
+            assertThat(gameStatus.remainingRounds).isEqualTo(25)
+            assertThat(gameStatus.playersMissing).isEmpty()
+            assertThat(gameStatus.gameOver).isFalse()
+        }
+
+        @Test
+        fun `player is missing for round when dice are rolled` () {
+            val player = Player("toto")
+            val game = KnisterGame(setOf(player))
+            game.rollDices()
+
+            val gameStatus = game.toGameStatus()
+
+            assertThat(gameStatus.remainingRounds).isEqualTo(24)
+            assertThat(gameStatus.playersMissing).contains(player.name)
+            assertThat(gameStatus.gameOver).isFalse()
         }
 
     }

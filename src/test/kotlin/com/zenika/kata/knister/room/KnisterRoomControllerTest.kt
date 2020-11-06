@@ -199,6 +199,20 @@ class KnisterRoomControllerTest() {
     }
 
     @Test
+    fun `a route is available to get game status`() {
+        val playerName = "Hugo"
+        val room = createRoom(playerName)
+        mvc.perform(post("/rooms/${room._id}/games"))
+                .andExpect(status().isOk())
+
+        mvc.perform(post("/rooms/${room._id}/games/roll"))
+                .andExpect(status().isOk())
+
+        mvc.perform(get("/rooms/${room._id}/games/status"))
+                .andExpect(status().isOk())
+    }
+
+    @Test
     fun `player can get his grid info`() {
         val playerName = "Hugo"
         val room = createRoom(playerName)

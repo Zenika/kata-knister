@@ -101,6 +101,20 @@ class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls:
         check(isOver())
         return gridsForPlayers.mapValues { it.value.score() }
     }
+
+    fun toGameStatus(): GameStatus {
+        val remainingRounds = roundsNumber - diceRolls.size
+        val gameOver = remainingRounds ==  0
+        val playersMissing = gridsForPlayers
+                .filter { it.value.dicesPlaced() < diceRolls.size }
+                .map { it.key.name }
+                .sorted()
+        return GameStatus(remainingRounds, gameOver, playersMissing)
+    }
+}
+
+data class GameStatus(val remainingRounds : Int, val gameOver : Boolean, val playersMissing : List<String>) {
+
 }
 
 data class DiceRoll(val first : Dice, val second : Dice) {
