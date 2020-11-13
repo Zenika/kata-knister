@@ -17,13 +17,17 @@ html {
 
 body {
   color: var(--knister-text-color);
-  font-size: 1.6rem;
+  font-size: 2rem;
   line-height: 1.4;
   font-family: 'Poppins', Arial, Tahoma, Verdana, Helvetica, sans-serif;
   background: var(--knister-background-color);
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
   min-height: 100%;
+}
+
+a {
+  color: var(--knister-primary-color);
 }
 
 .text-left {
