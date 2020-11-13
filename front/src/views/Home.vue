@@ -5,26 +5,39 @@
       <button type="submit">Envoyer</button>
     </form>
     <div v-else>
-      <h1>Bonjour {{ name }}</h1>
+      <h1>Bonjour {{ playerName }}</h1>
 
-      <button type="button" @click="createRoom">Créer une salle</button>
+      <button type="button" @click="newRoom">Créer une salle</button>
+
+      {{ room }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
+import { Options, Vue } from 'vue-class-component';
+import { mapActions, mapMutations, mapState } from 'vuex';
+import { RoomPayload, Room } from '@/models/Room';
 
 @Options({
   components: {},
+  computed: {
+    ...mapState(['room', 'playerName']),
+  },
+  methods: {
+    ...mapMutations(['setPlayerName']),
+    ...mapActions(['createRoom']),
+  },
 })
 export default class Home extends Vue {
-  isLoggedIn = false;
-  name = "";
+  createRoom!: (data: RoomPayload) => void;
+  setPlayerName!: (playerName: string) => void;
+  room!: Room;
+  playerName!: string;
+  name = '';
 
-  mounted() {
-    this.isLoggedIn = !!localStorage.getItem("user");
-    this.name = localStorage.getItem("user") || "";
+  get isLoggedIn() {
+    return !!this.playerName;
   }
 
   logUser() {
@@ -32,22 +45,11 @@ export default class Home extends Vue {
       return;
     }
 
-    localStorage.setItem("user", this.name.trim());
-    this.isLoggedIn = true;
+    this.setPlayerName(this.name);
   }
 
-  async createRoom() {
-    const req = await fetch("http://34.78.67.84:8080/rooms", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: this.name,
-      }),
-    });
-
-    console.log(req);
+  newRoom() {
+    this.createRoom({ name: this.name });
   }
 }
 </script>
