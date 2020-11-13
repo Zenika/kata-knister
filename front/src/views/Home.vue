@@ -7,7 +7,9 @@
     <div v-else>
       <h1>Bonjour {{ playerName }}</h1>
 
-      <button type="button" @click="newRoom">Créer une salle</button>
+      <button type="button" @click="newRoom" v-if="!room">
+        Créer une salle
+      </button>
 
       {{ room }}
     </div>
