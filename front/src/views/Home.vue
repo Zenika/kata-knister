@@ -19,7 +19,8 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { mapActions, mapMutations, mapState } from 'vuex';
-import { RoomPayload, Room } from '@/models/Room';
+import { RoomPayload, RoomModel } from '@/models/Room';
+import router from '../router';
 
 @Options({
   components: {},
@@ -34,7 +35,7 @@ import { RoomPayload, Room } from '@/models/Room';
 export default class Home extends Vue {
   createRoom!: (data: RoomPayload) => void;
   setPlayerName!: (playerName: string) => void;
-  room!: Room;
+  room!: RoomModel;
   playerName!: string;
   name = '';
 
@@ -50,8 +51,9 @@ export default class Home extends Vue {
     this.setPlayerName(this.name);
   }
 
-  newRoom() {
-    this.createRoom({ name: this.name });
+  async newRoom() {
+    await this.createRoom({ name: this.name });
+    router.push('room');
   }
 }
 </script>

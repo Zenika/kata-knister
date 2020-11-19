@@ -4,7 +4,12 @@ const API_URL = process.env.VUE_APP_API_URL;
 
 export default {
   get(url: string): Promise<unknown> {
-    return axios.get(`${API_URL}${url}`);
+    return axios
+      .get(`${API_URL}${url}`)
+      .then(response => response.data)
+      .catch(err => {
+        console.log(err);
+      });
   },
   post({
     url,
