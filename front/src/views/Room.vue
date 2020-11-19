@@ -1,6 +1,6 @@
 <template>
   <div class="room">
-    <h1>Bienvenue dans la salle {{ room._id }}</h1>
+    <h1>Bienvenue dans la salle {{ room.id }}</h1>
 
     <button type="button" @click="newGame" v-if="!game.running">
       Démarrer une partie
