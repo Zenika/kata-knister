@@ -7,7 +7,7 @@
     <div v-else>
       <h1>Bonjour {{ playerName }}</h1>
 
-      <button type="button" @click="newRoom" v-if="!room">
+      <button type="button" @click="newRoom" v-if="!room.id">
         Créer une salle
       </button>
 
@@ -18,23 +18,18 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { mapActions, mapMutations, mapState } from 'vuex';
-import { RoomPayload, RoomModel } from '@/models/Room';
+import { mapState } from 'vuex';
+import { RoomModel } from '@/models/Room';
 import router from '../router';
+import { MutationTypes } from '@/store/mutations';
+import { ActionTypes } from '@/store/actions';
 
 @Options({
-  components: {},
   computed: {
     ...mapState(['room', 'playerName']),
   },
-  methods: {
-    ...mapMutations(['setPlayerName']),
-    ...mapActions(['createRoom']),
-  },
 })
 export default class Home extends Vue {
-  createRoom!: (data: RoomPayload) => void;
-  setPlayerName!: (playerName: string) => void;
   room!: RoomModel;
   playerName!: string;
   name = '';
@@ -48,11 +43,11 @@ export default class Home extends Vue {
       return;
     }
 
-    this.setPlayerName(this.name);
+    this.$store.commit(MutationTypes.SET_PLAYERNAME, this.name);
   }
 
   async newRoom() {
-    await this.createRoom({ name: this.name });
+    await this.$store.dispatch(ActionTypes.CREATE_ROOM, { name: this.name });
     router.push('room');
   }
 }

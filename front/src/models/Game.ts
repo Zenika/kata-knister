@@ -1,6 +1,8 @@
-export interface Game {
-  id: number;
-  gridForPlayers?: any;
+export interface GameModel {
+  cancelled: boolean;
+  running: boolean;
+  gridForPlayers: any;
+  diceRolls: [];
   status?: GameStatusModel;
 }
 

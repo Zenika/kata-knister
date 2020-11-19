@@ -2,7 +2,7 @@
   <div class="room">
     <h1>Bienvenue dans la salle {{ room._id }}</h1>
 
-    <button type="button" @click="newGame" v-if="!game">
+    <button type="button" @click="newGame" v-if="!game.running">
       Démarrer une partie
     </button>
 
@@ -11,6 +11,9 @@
     </button>
 
     <br />
+
+    <button @click="startPolling">Start polling</button>
+    <button @click="stopPolling">Stop polling</button>
 
     <div v-if="grid?.lines">
       <div class="line" v-for="(line, index) in grid.lines" :key="index">
@@ -24,41 +27,58 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
-import { Game } from '@/models/Game';
+import { mapState } from 'vuex';
+import { GameModel } from '@/models/Game';
 import { RoomModel } from '@/models/Room';
+import { DiceRollModel } from '@/models/Dice';
+import { GridModel } from '@/models/Grid';
+import { ActionTypes } from '@/store/actions';
 
 @Options({
   computed: {
     ...mapState(['room', 'game', 'dice', 'grid']),
   },
-  methods: {
-    ...mapActions(['startGame', 'getGameStatus', 'rollDice']),
-  },
 })
 export default class Room extends Vue {
-  startGame!: (id: string) => void;
-  rollDice!: (id: string) => Promise<any>;
-  getGameStatus!: (id: string) => void;
   room!: RoomModel;
-  game!: Game;
-  dice!: any;
-  grid!: any;
+  game!: GameModel;
+  diceRoll!: DiceRollModel;
+  grid!: GridModel;
+  polling!: number;
+  isPolling = false;
 
   get canRollDice() {
     return (
-      this.game?.status?.playersMissing.length === 0 &&
-      !this.game?.status?.gameOver
+      this.game.status?.playersMissing?.length === 0 &&
+      !this.game.status?.gameOver
     );
   }
 
   async newGame() {
-    await this.startGame(this.room._id);
-    await this.getGameStatus(this.room._id);
+    await this.$store.dispatch(ActionTypes.START_GAME, this.room.id);
+    await this.$store.dispatch(ActionTypes.GET_GAME_STATUS, this.room.id);
   }
 
   async roll() {
-    await this.rollDice(this.room._id);
+    await this.$store.dispatch(ActionTypes.ROLL_DICE, this.room.id);
+  }
+
+  beforeUnmount() {
+    if (this.isPolling) {
+      this.stopPolling();
+    }
+  }
+
+  stopPolling() {
+    clearInterval(this.polling);
+    this.isPolling = false;
+  }
+
+  startPolling() {
+    this.isPolling = true;
+    this.polling = setInterval(() => {
+      this.$store.dispatch(ActionTypes.GET_GAME_STATUS, this.room.id);
+    }, 1000);
   }
 }
 </script>

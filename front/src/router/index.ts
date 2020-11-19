@@ -1,5 +1,4 @@
 import BlankLayout from '@/layouts/BlankLayout.vue';
-import { RoomModel } from '@/models/Room';
 import store from '@/store';
 import Home from '@/views/Home.vue';
 import NotFound from '@/views/NotFound.vue';
@@ -15,13 +14,23 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Home',
         path: '/',
         component: Home,
+        beforeEnter: (_, __, next) => {
+          const hasRoom = !!store.state.room.id;
+
+          if (hasRoom) {
+            next({ name: 'Room' });
+            return;
+          }
+
+          next();
+        },
       },
       {
+        name: 'Room',
         path: '/room',
         component: Room,
         beforeEnter: (_, __, next) => {
-          // TODO: faire plsu propre
-          const hasRoom = !!((store?.state?.room as unknown) as RoomModel)?._id;
+          const hasRoom = !!store.state.room.id;
 
           if (!hasRoom) {
             next({ name: 'Home' });

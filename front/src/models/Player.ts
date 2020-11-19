@@ -1,3 +1,3 @@
-export interface Player {
+export interface PlayerModel {
   name: string;
 }
