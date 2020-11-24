@@ -109,11 +109,11 @@ class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls:
                 .filter { it.value.dicesPlaced() < diceRolls.size }
                 .map { it.key.name }
                 .sorted()
-        return GameStatus(remainingRounds, gameOver, playersMissing)
+        return GameStatus(remainingRounds, gameOver, playersMissing, diceRolls.lastOrNull())
     }
 }
 
-data class GameStatus(val remainingRounds : Int, val gameOver : Boolean, val playersMissing : List<String>) {
+data class GameStatus(val remainingRounds: Int, val gameOver: Boolean, val playersMissing: List<String>, val lastDiceRoll: DiceRoll?) {
 
 }
 

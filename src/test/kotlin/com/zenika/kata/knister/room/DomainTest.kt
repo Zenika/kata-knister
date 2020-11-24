@@ -212,19 +212,21 @@ class DomainTest {
             assertThat(gameStatus.remainingRounds).isEqualTo(25)
             assertThat(gameStatus.playersMissing).isEmpty()
             assertThat(gameStatus.gameOver).isFalse()
+            assertThat(gameStatus.lastDiceRoll).isNull()
         }
 
         @Test
         fun `player is missing for round when dice are rolled` () {
             val player = Player("toto")
             val game = KnisterGame(setOf(player))
-            game.rollDices()
+            val diceRoll = game.rollDices()
 
             val gameStatus = game.toGameStatus()
 
             assertThat(gameStatus.remainingRounds).isEqualTo(24)
             assertThat(gameStatus.playersMissing).contains(player.name)
             assertThat(gameStatus.gameOver).isFalse()
+            assertThat(gameStatus.lastDiceRoll).isEqualTo(diceRoll)
         }
 
     }
