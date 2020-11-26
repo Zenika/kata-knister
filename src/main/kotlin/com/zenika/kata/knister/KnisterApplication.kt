@@ -48,7 +48,10 @@ class WSConfig : WebSocketConfigurer {
             .build()
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
-        registry.addHandler(RoomHandler(getRoomRepository()), "/roomSocket").withSockJS()
+        registry
+            .addHandler(RoomHandler(getRoomRepository()), "/roomSocket")
+                .setAllowedOrigins("*")
+
     }
 }
 
