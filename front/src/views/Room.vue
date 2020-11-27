@@ -34,6 +34,11 @@ import { DiceRollModel } from '@/models/Dice';
 import { GridModel } from '@/models/Grid';
 import { ActionTypes } from '@/store/actions';
 
+enum WebSocketEvents {
+  Created = 'created',
+
+}
+
 @Options({
   computed: {
     ...mapState(['room', 'game', 'dice', 'grid']),
@@ -46,11 +51,24 @@ export default class Room extends Vue {
   grid!: GridModel;
   polling!: number;
   isPolling = false;
+  websocket: WebSocket = new WebSocket("ws://34.78.67.84:8080/roomSocket");;
+
+  created() {
+    this.websocket.onmessage = this.onMessage;
+
+    this.websocket.onopen = () => {
+      this.websocket.send(`{ type: 'created', roomId: ${this.room.id}, playerName: ${this.$store.state.playerName} }`);
+    };
+  }
+
+  onMessage(event: any) {
+    console.log(event);
+  }
 
   get canRollDice() {
     return (
       this.game.status?.playersMissing?.length === 0 &&
-      !this.game.status?.gameOver
+            !this.game.status?.gameOver
     );
   }
 
