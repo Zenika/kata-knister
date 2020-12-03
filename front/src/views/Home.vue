@@ -10,8 +10,12 @@
       <button type="button" @click="newRoom" v-if="!room.id">
         Créer une salle
       </button>
-
-      {{ room }}
+      <form @submit.prevent="joinRoom" v-if="!room.id">
+        <input type="text" v-model="roomId"/>
+        <button type="submit">
+          Rejoindre une salle
+        </button>
+      </form>
     </div>
   </div>
 </template>
@@ -33,6 +37,7 @@ export default class Home extends Vue {
   room!: RoomModel;
   playerName!: string;
   name = '';
+  roomId = '';
 
   get isLoggedIn() {
     return !!this.playerName;
@@ -47,7 +52,12 @@ export default class Home extends Vue {
   }
 
   async newRoom() {
-    await this.$store.dispatch(ActionTypes.CREATE_ROOM, { name: this.name });
+    await this.$store.dispatch(ActionTypes.CREATE_ROOM, { name: this.playerName });
+    router.push('room');
+  }
+
+  async joinRoom() {
+    await this.$store.dispatch(ActionTypes.JOIN_ROOM, { roomId: this.roomId, name: this.playerName });
     router.push('room');
   }
 }
