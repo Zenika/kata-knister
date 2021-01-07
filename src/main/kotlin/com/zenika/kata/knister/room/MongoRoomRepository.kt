@@ -21,6 +21,10 @@ class MongoRoomRepository : RoomRepository {
         return roomCollection.findOneById(id)
     }
 
+    override fun findActiveRooms(): List<Room> {
+        return roomCollection.find().filter{ it.players.isNotEmpty() }.toList()
+    }
+
     override fun update(room: Room): Room {
         roomCollection.updateOne(room)
         return room

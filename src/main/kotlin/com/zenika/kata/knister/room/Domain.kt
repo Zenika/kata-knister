@@ -35,12 +35,20 @@ class Room() {
         return newGame
     }
 
+    fun roundOver(): Boolean {
+        return currentGame().roundOver()
+    }
+
+    fun gameOver(): Boolean {
+        return currentGame().isOver()
+    }
+
 
 }
 
 data class Player(val name: String) {
     override fun toString(): String {
-        return name;
+        return name
     }
 }
 
@@ -63,7 +71,7 @@ class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls:
         return diceRoll
     }
 
-    private fun roundOver(): Boolean {
+    fun roundOver(): Boolean {
         return gridsForPlayers.values.all { it.dicesPlaced() == diceRolls.size }
     }
 
@@ -73,7 +81,7 @@ class KnisterGame(var gridsForPlayers : MutableMap<Player, Grid>, val diceRolls:
         playerGrid.placeDices(gridPosition, diceRolls.last().score())
     }
 
-    private fun isOver(): Boolean {
+    fun isOver(): Boolean {
         return diceRolls.size == roundsNumber && roundOver()
     }
 

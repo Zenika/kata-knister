@@ -12,13 +12,16 @@ import javax.servlet.http.HttpServletRequest
 @RestController
 @RequestMapping("/rooms")
 @CrossOrigin(origins = ["http://localhost:3000"])
-class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
+class KnisterRoomController(@Autowired val roomRepository: RoomRepository, @Autowired val socketService: SocketService) {
 
     @PostMapping
     fun openRoom(@RequestBody player: Player): Room {
         val room = Room()
         room.addPlayer(player)
-        return roomRepository.create(room)
+        val createdRoom = roomRepository.create(room)
+        val roomIds = roomRepository.findActiveRooms().map { it -> it._id }
+        socketService.notifyRooms(roomIds)
+        return createdRoom
     }
 
     @GetMapping("/{roomId}")
@@ -31,6 +34,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         val room = getRoom(roomId)
         room.addPlayer(player)
         roomRepository.update(room)
+        socketService.notifyPlayersChange(room)
     }
 
     @DeleteMapping("/{roomId}/players")
@@ -38,6 +42,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         val room = getRoom(roomId)
         room.removePlayer(player)
         roomRepository.update(room)
+        socketService.notifyPlayersChange(room)
     }
 
     @PostMapping("/{roomId}/games")
@@ -45,6 +50,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         val room = getRoom(roomId)
         val game = room.startGame()
         roomRepository.update(room)
+        socketService.gameStarted(room)
         return game
     }
 
@@ -54,6 +60,7 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         val game = room.currentGame()
         val rollDices = game.rollDices()
         roomRepository.update(room)
+        socketService.diceRolled(room, rollDices)
         return rollDices
     }
 
@@ -62,6 +69,12 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository) {
         val room = getRoom(roomId)
         val game = room.currentGame()
         game.playerPlacesDicesInSquare(Player(player), gridPosition)
+        if(room.roundOver()) {
+            socketService.roundCompleted(room)
+        }
+        if(room.gameOver()) {
+            socketService.gameCompleted(room)
+        }
         roomRepository.update(room)
     }
 

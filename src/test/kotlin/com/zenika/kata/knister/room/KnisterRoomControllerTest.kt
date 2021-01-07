@@ -3,11 +3,12 @@ package com.zenika.kata.knister.room
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.hamcrest.Matchers.notNullValue
-import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -31,6 +32,8 @@ class KnisterRoomControllerTest() {
     @SpyBean
     private lateinit var repo : InMemoryRoomRepository
 
+    @MockBean
+    private lateinit var socketService: SocketService
 
     @Test
     fun `given a room is opened it gets an id and a player`() {
@@ -40,11 +43,13 @@ class KnisterRoomControllerTest() {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._id", notNullValue()))
                 .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Jean-Jacques")))
+
+        Mockito.verify(socketService).notifyRooms(Mockito.anyList())
     }
 
     @Test
     fun `given an open room a player can join`() {
-        var room = createRoom("Tutu")
+        val room = createRoom("Tutu")
 
         room.addPlayer("Toto")
 
@@ -56,7 +61,7 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `given an open room several players can join`() {
-        var room = createRoom("Tutu")
+        val room = createRoom("Tutu")
 
         room.addPlayer("Toto").andExpect(status().isOk())
         room.addPlayer("Tata").andExpect(status().isOk())
@@ -83,7 +88,7 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `trying to add an already existing player should return a 409`() {
-        var room = createRoom("Tutu");
+        val room = createRoom("Tutu")
 
         room.addPlayer("Toto").andExpect(status().isOk())
         room.addPlayer("Toto").andExpect(status().isConflict())
@@ -91,7 +96,7 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `Gamemaster can start game`() {
-        var room = createRoom("Hugo")
+        val room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room._id}/games"))
                 .andExpect(status().isOk())
@@ -100,7 +105,7 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `when game is started dices can be rolled`() {
-        var room = createRoom("Hugo")
+        val room = createRoom("Hugo")
         mvc.perform(post("/rooms/${room._id}/games"))
                 .andExpect(status().isOk())
 
@@ -250,7 +255,7 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `when game is not started dices cannot be rolled`() {
-        var room = createRoom("Hugo")
+        val room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
                 .andExpect(status().is4xxClientError())
@@ -258,7 +263,7 @@ class KnisterRoomControllerTest() {
 
     @Test
     fun `impossible to start a game if already started`() {
-        var room = createRoom("Hugo")
+        val room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room._id}/games"))
                 .andExpect(status().isOk())
@@ -274,7 +279,7 @@ class KnisterRoomControllerTest() {
         val mvcResult = mvc.perform(post("/rooms")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Player(gameMaster))))
-        .andReturn();
+        .andReturn()
         return mapper.readValue<Room>(mvcResult.response.contentAsString, Room::class.java)
     }
 

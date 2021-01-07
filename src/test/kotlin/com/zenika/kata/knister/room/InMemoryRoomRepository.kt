@@ -12,6 +12,9 @@ class InMemoryRoomRepository : RoomRepository {
     }
 
     override fun findOne(id: String): Room? = rooms[id]
+    override fun findActiveRooms(): List<Room> {
+        return rooms.values.filter{ it.players.isNotEmpty() }.toList()
+    }
 
     override fun update(room: Room): Room {
         rooms.replace(room._id, room)
