@@ -2,6 +2,8 @@ package com.zenika.kata.knister
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.zenika.kata.knister.room.SocketService
+import com.zenika.kata.knister.room.MongoRoomRepository
+import com.zenika.kata.knister.room.RoomRepository
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 import org.springframework.boot.runApplication
@@ -33,6 +35,9 @@ class WSConfig : WebSocketConfigurer {
 
     @Bean
     fun getSocketService(): SocketService = SocketService()
+
+    @Bean
+    fun getRoomRepository(): RoomRepository = MongoRoomRepository()
 
     @Bean
     fun productApi(): Docket = Docket(DocumentationType.SWAGGER_2)
