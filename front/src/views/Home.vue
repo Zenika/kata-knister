@@ -27,6 +27,7 @@ import { RoomModel } from '@/models/Room';
 import router from '../router';
 import { MutationTypes } from '@/store/mutations';
 import { ActionTypes } from '@/store/actions';
+import WsService from '@/services/ws.service';
 
 @Options({
   computed: {
@@ -47,7 +48,11 @@ export default class Home extends Vue {
     if (!this.name) {
       return;
     }
+    this.createSocket();
+  }
 
+  async createSocket() {
+    await WsService.send(`{ "playerName": "${this.name}" }`);
     this.$store.commit(MutationTypes.SET_PLAYERNAME, this.name);
   }
 

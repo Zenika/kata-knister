@@ -3,7 +3,7 @@ let websocket: WebSocket;
 
 const openWS = () => {
   return new Promise((resolve, reject) => {
-    websocket = new WebSocket(`${WS_URL}/roomSocket`);
+    websocket = new WebSocket(`${WS_URL}/knisterSocket`);
 
     websocket.onopen = () => {
       resolve(websocket);

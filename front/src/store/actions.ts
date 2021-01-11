@@ -43,8 +43,6 @@ export const actions: ActionTree<State, State> = {
       return;
     }
 
-    await WsService.send(`{ type: 'created', room: ${data._id}, playerName: ${payload.name} }`);
-
     commit(MutationTypes.SET_ROOM, {
       id: data._id,
       players: data.players,
@@ -56,8 +54,6 @@ export const actions: ActionTree<State, State> = {
       const data = await ApiService.post({ url: `rooms/${roomId}/players`, body: {name} });
       const roomData = await ApiService.get(`rooms/${roomId}`);
 
-      await WsService.send(`{ type: 'joined', room: ${roomId}, playerName: ${name} }`);
-  
       commit(MutationTypes.SET_ROOM, {
         id: roomData._id,
         players: roomData.players,
