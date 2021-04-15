@@ -7,7 +7,7 @@ services:
   mongo:
     image: mongo
     volumes:
-      - mongodata:/data/db
+      - c:\data\mongodata:/data/db
     ports:
       - 27017:27017
 
@@ -16,6 +16,7 @@ services:
     build: .
     ports:
       - 8080:8080
+      - 8000:8000
     environment:
       - MONGOCSTRING=mongodb://mongo:27017
     depends_on:

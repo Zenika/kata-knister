@@ -5,6 +5,11 @@ import NotFound from '@/views/NotFound.vue';
 import Room from '@/views/Room.vue';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
+function resetState() {
+  store.state.playerName = '';
+  store.state.room.id = '';
+}
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -40,6 +45,15 @@ const routes: Array<RouteRecordRaw> = [
           next();
         },
       },
+      {
+        name: 'Reset',
+        path: '/reset',
+        component: Home,
+        beforeEnter: (_, __, next) => {
+          resetState();
+          next({ name: 'Home' });
+        },
+      },
     ],
   },
   {
@@ -65,3 +79,4 @@ router.beforeEach(to => {
 });
 
 export default router;
+

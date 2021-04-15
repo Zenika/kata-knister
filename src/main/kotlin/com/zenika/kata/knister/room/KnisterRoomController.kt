@@ -1,6 +1,7 @@
 package com.zenika.kata.knister.room
 
 import Grid
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -13,13 +14,14 @@ import javax.servlet.http.HttpServletRequest
 @RequestMapping("/rooms")
 @CrossOrigin(origins = ["http://localhost:3000"])
 class KnisterRoomController(@Autowired val roomRepository: RoomRepository, @Autowired val socketService: SocketService) {
+    private val log = LoggerFactory.getLogger(KnisterRoomController::class.java)
 
     @PostMapping
     fun openRoom(@RequestBody player: Player): Room {
         val room = Room()
         room.addPlayer(player)
         val createdRoom = roomRepository.create(room)
-        val roomIds = roomRepository.findActiveRooms().map { it -> it._id }
+        val roomIds = roomRepository.findActiveRooms().map { it._id }
         socketService.notifyRooms(roomIds)
         return createdRoom
     }

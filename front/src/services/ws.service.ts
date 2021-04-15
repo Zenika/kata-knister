@@ -1,4 +1,4 @@
-const WS_URL = 'ws://34.78.67.84:8080';
+const WS_URL = 'ws://localhost:8080';
 let websocket: WebSocket;
 
 const openWS = () => {
