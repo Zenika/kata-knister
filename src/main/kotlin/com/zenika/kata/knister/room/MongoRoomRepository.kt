@@ -1,5 +1,6 @@
 package com.zenika.kata.knister.room
 
+import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.findOneById
@@ -30,7 +31,10 @@ class MongoRoomRepository : RoomRepository {
     override fun update(room: Room): Room {
         val currentVersion = room.version
         room.version++
-        val result = roomCollection.updateOne("{_id=${room._id},version=$currentVersion}", room, updateOptions)
+        val versionAndIdFilter = Filters.and(
+                                    Filters.eq("_id", room._id),
+                                    Filters.eq("version", currentVersion))
+        val result = roomCollection.updateOne(versionAndIdFilter, room, updateOptions)
         if (result.modifiedCount == 0L) throw ConcurrentAccessException("Room modified by another user")
         return room
     }
