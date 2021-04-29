@@ -7,7 +7,7 @@ services:
   mongo:
     image: mongo
     volumes:
-      - c:\data\mongodata:/data/db
+      - /data/mongodata:/data/db
     ports:
       - 27017:27017
 
