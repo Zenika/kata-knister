@@ -26,6 +26,11 @@ class KnisterRoomController(@Autowired val roomRepository: RoomRepository, @Auto
         return createdRoom
     }
 
+    @GetMapping
+    fun getRooms(): List<Room> {
+        return roomRepository.findActiveRooms()
+    }
+
     @GetMapping("/{roomId}")
     fun getRoom(@PathVariable roomId: String): Room {
         return roomRepository.findOne(roomId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)

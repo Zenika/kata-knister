@@ -1,8 +1,7 @@
 package com.zenika.kata.knister.room
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.hamcrest.Matchers.containsInAnyOrder
-import org.hamcrest.Matchers.notNullValue
+import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
@@ -17,11 +16,12 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.regex.Matcher
 
 // TODO injecter InMemoryRoomRespository pour ne pas dépendre de mongo.
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(KnisterRoomController::class)
-class KnisterRoomControllerTest() {
+class KnisterRoomControllerTest {
 
     @Autowired
     private lateinit var mvc: MockMvc
@@ -36,13 +36,25 @@ class KnisterRoomControllerTest() {
     private lateinit var socketService: SocketService
 
     @Test
+    fun `given a player he can get the list of room ids`() {
+        val room1 = createRoom("Tutu")
+        val room2 = createRoom("Tutu")
+
+
+        mvc.perform(get("/rooms"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$[*]._id", hasItems(room1._id, room2._id)))
+    }
+
+    @Test
     fun `given a room is opened it gets an id and a player`() {
         mvc.perform(post("/rooms")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Player("Jean-Jacques"))))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$._id", notNullValue()))
-                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Jean-Jacques")))
+                .andExpect(jsonPath("$.players[*].name", hasItems("Jean-Jacques")))
 
         Mockito.verify(socketService).notifyRooms(Mockito.anyList())
     }
@@ -54,28 +66,28 @@ class KnisterRoomControllerTest() {
         room.addPlayer("Toto")
 
         mvc.perform(get("/rooms/${room._id}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$.players", notNullValue()))
-                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Toto", "Tutu")))
+                .andExpect(jsonPath("$.players[*].name", hasItems("Toto", "Tutu")))
     }
 
     @Test
     fun `given an open room several players can join`() {
         val room = createRoom("Tutu")
 
-        room.addPlayer("Toto").andExpect(status().isOk())
-        room.addPlayer("Tata").andExpect(status().isOk())
+        room.addPlayer("Toto").andExpect(status().isOk)
+        room.addPlayer("Tata").andExpect(status().isOk)
 
         mvc.perform(get("/rooms/${room._id}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$.players", notNullValue()))
-                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Toto", "Tata", "Tutu")))
+                .andExpect(jsonPath("$.players[*].name", hasItems("Toto", "Tata", "Tutu")))
     }
 
     @Test
     fun `given a room id doesn't exist then getter should return a 404`() {
         mvc.perform(get("/rooms/1234"))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isNotFound)
     }
 
     @Test
@@ -83,15 +95,15 @@ class KnisterRoomControllerTest() {
         mvc.perform(post("/rooms/1234/players")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Player("Toto"))))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isNotFound)
     }
 
     @Test
     fun `trying to add an already existing player should return a 409`() {
         val room = createRoom("Tutu")
 
-        room.addPlayer("Toto").andExpect(status().isOk())
-        room.addPlayer("Toto").andExpect(status().isConflict())
+        room.addPlayer("Toto").andExpect(status().isOk)
+        room.addPlayer("Toto").andExpect(status().isConflict)
     }
 
     @Test
@@ -99,7 +111,7 @@ class KnisterRoomControllerTest() {
         val room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$.diceRolls", notNullValue()))
     }
 
@@ -107,10 +119,10 @@ class KnisterRoomControllerTest() {
     fun `when game is started dices can be rolled`() {
         val room = createRoom("Hugo")
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$.first", notNullValue()))
 
     }
@@ -120,15 +132,15 @@ class KnisterRoomControllerTest() {
         val playerName = "Hugo"
         val room = createRoom(playerName)
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(GridPosition(0,0))))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
     }
 
@@ -137,20 +149,20 @@ class KnisterRoomControllerTest() {
         val playerName = "Hugo"
         val room = createRoom(playerName)
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(GridPosition(0,0))))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(GridPosition(1,1))))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is4xxClientError)
 
     }
 
@@ -159,23 +171,23 @@ class KnisterRoomControllerTest() {
         val playerName = "Hugo"
         val room = createRoom(playerName)
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(GridPosition(0,0))))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(GridPosition(0,0))))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is4xxClientError)
 
     }
 
@@ -185,20 +197,20 @@ class KnisterRoomControllerTest() {
         val playerName = "Hugo"
         val room = createRoom(playerName)
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         for(i in 0  until 25) {
 
             mvc.perform(post("/rooms/${room._id}/games/roll"))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isOk)
 
             mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(GridPosition(i / 5, i % 5))))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isOk)
         }
         mvc.perform(get("/rooms/${room._id}/games/scores"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
 
     }
@@ -208,13 +220,13 @@ class KnisterRoomControllerTest() {
         val playerName = "Hugo"
         val room = createRoom(playerName)
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(get("/rooms/${room._id}/games/status"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
     }
 
     @Test
@@ -222,17 +234,17 @@ class KnisterRoomControllerTest() {
         val playerName = "Hugo"
         val room = createRoom(playerName)
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(post("/rooms/${room._id}/games/${playerName}/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(GridPosition(0,0))))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(get("/rooms/${room._id}/games/${playerName}/grid"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$.lines", notNullValue()))
     }
 
@@ -246,11 +258,11 @@ class KnisterRoomControllerTest() {
         mvc.perform(delete("/rooms/${room._id}/players")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(Player(leaverName))))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
 
         mvc.perform(get("/rooms/${room._id}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.players[*].name", containsInAnyOrder("Hugo")))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.players[*].name", hasItems("Hugo")))
     }
 
     @Test
@@ -258,7 +270,7 @@ class KnisterRoomControllerTest() {
         val room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room._id}/games/roll"))
-                .andExpect(status().is4xxClientError())
+                .andExpect(status().is4xxClientError)
     }
 
     @Test
@@ -266,11 +278,11 @@ class KnisterRoomControllerTest() {
         val room = createRoom("Hugo")
 
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk)
                 .andExpect(jsonPath("$.diceRolls", notNullValue()))
 
         mvc.perform(post("/rooms/${room._id}/games"))
-                .andExpect(status().isConflict())
+                .andExpect(status().isConflict)
     }
 
     // TODO only Gamemaster can start a game ?
