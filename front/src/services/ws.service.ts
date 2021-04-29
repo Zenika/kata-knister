@@ -11,7 +11,11 @@ const openWS = () => {
 
     websocket.onerror = (error) => {
       reject(error);
-    } 
+    }
+    
+    websocket.onmessage = (message) => {
+      console.log(message);
+    }
   });
 }
 
