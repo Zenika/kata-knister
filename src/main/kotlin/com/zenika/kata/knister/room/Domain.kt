@@ -6,6 +6,7 @@ class Room() {
     val _id: String = generateRoomId()
     val players: MutableSet<Player> = mutableSetOf()
     val games : MutableList<KnisterGame> = mutableListOf()
+    var version : Int = 0
 
     fun addPlayer(player: Player) {
         if (players.contains(player))
