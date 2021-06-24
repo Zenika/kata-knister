@@ -1,6 +1,6 @@
 package com.zenika.kata.knister.room
 
-import Grid
+import com.zenika.kata.knister.score.Grid
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus

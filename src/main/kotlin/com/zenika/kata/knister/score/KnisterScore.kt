@@ -14,33 +14,6 @@ fun findCorrespondingFigure(dices: IntArray): Figure? {
     return Figure.values().find { it.combination contentEquals dices }
 }
 
-class Grid(val lines : Array<IntArray>) {
-    constructor() : this(Array(5) { IntArray(5)} )
-
-    fun score() : Int {
-        val linesSum = lines.map {Line(it).score()}.sum()
-
-        val cols = Array<Line>(5) { i ->
-            Line(lines.map{ it[i] }.toIntArray())
-        }
-        val colsSum = cols.map(Line::score).sum()
-
-        var i = 0 
-        val diagOne = Line(lines.map { it[i++] }.toIntArray()).score()
-        val diagTwo = Line(lines.map { it[--i] }.toIntArray()).score()
-
-        return linesSum + colsSum +  (diagOne + diagTwo)*2
-    }
-
-    fun placeDices(gridPosition: GridPosition, score: Int) {
-        require(lines[gridPosition.y][gridPosition.x] == 0)
-        lines[gridPosition.y][gridPosition.x] = score
-    }
-
-    fun dicesPlaced(): Int {
-        return lines.flatMap { it.toList() }.filter{it != 0}.size
-    }
-}
 class Line(private val diceResults: IntArray) {
     private val COMMON_STRAIGHT_DICE_ROLL = 7
 

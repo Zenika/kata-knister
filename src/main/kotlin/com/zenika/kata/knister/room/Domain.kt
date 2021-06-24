@@ -1,6 +1,6 @@
 package com.zenika.kata.knister.room
 
-import Grid
+import com.zenika.kata.knister.score.Grid
 
 class Room() {
     val _id: String = generateRoomId()
